@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microservices — Top 15 Concepts, Explained Simply</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F7F9;
+  --card:#FFFFFF;
+  --ink:#17222C;
+  --ink-soft:#4A5865;
+  --line:#DDE3EA;
+  --teal:#0E8A72;
+  --teal-soft:#E2F3EE;
+  --blue:#2E5AAC;
+  --blue-soft:#E8EEF9;
+  --danger:#D6482B;
+  --danger-soft:#FBEAE5;
+  --amber:#B97609;
+  --amber-soft:#FFF4DE;
+  --code-bg:#111A24;
+  --radius:14px;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Bricolage Grotesque','Inter',sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.65;font-size:16px}
+.layout{display:grid;grid-template-columns:270px 1fr;max-width:1240px;margin:0 auto;gap:32px;padding:0 20px}
+
+/* ---------- sidebar ---------- */
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 4px 28px 0;border-right:1px solid var(--line)}
+.brand{font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;margin-bottom:4px}
+.brand span{color:var(--teal)}
+.brand-sub{font-size:.78rem;color:var(--ink-soft);margin-bottom:22px}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink-soft);font-size:.86rem;font-weight:500;margin-bottom:2px;border:1px solid transparent}
+.nav a .n{font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);background:#EDF0F4;border-radius:6px;padding:1px 6px;min-width:28px;text-align:center}
+.nav a:hover{background:#EEF1F5;color:var(--ink)}
+.nav a.active{background:var(--teal-soft);color:var(--teal);border-color:#BFE4DA;font-weight:600}
+.nav a.active .n{background:var(--teal);color:#fff}
+
+/* ---------- main ---------- */
+main{padding:28px 0 80px;min-width:0}
+.hero{background:linear-gradient(135deg,#12303F 0%,#0E4B44 100%);color:#F2F7F5;border-radius:20px;padding:40px 38px;margin-bottom:34px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.10) 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,3.4vw,2.5rem);letter-spacing:-.02em;line-height:1.15;margin-bottom:12px}
+.hero h1 em{font-style:normal;color:#7BDCC3}
+.hero p{max-width:640px;color:#CFE3DD;font-size:.98rem}
+.hero .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.hero .chip{font-family:var(--mono);font-size:.72rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:4px 12px}
+
+/* ---------- concept sections ---------- */
+.concept{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 34px;margin-bottom:30px;scroll-margin-top:20px}
+.c-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.c-num{font-family:var(--mono);font-weight:600;font-size:.8rem;background:var(--ink);color:#fff;border-radius:8px;padding:5px 10px}
+.c-head h2{font-family:var(--display);font-weight:700;font-size:1.45rem;letter-spacing:-.01em}
+.c-tag{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);background:var(--blue-soft);border-radius:99px;padding:4px 12px;margin-left:auto}
+.c-def{font-size:1.02rem;color:var(--ink);margin-bottom:18px}
+.c-def strong{color:var(--teal)}
+
+.block-label{font-family:var(--mono);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin:22px 0 8px;display:flex;align-items:center;gap:8px}
+.block-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.analogy{background:var(--amber-soft);border:1px solid #F2DFB8;border-left:4px solid var(--amber);border-radius:10px;padding:14px 18px;font-size:.95rem;margin-bottom:6px}
+.analogy strong{color:var(--amber)}
+
+.example-box{background:var(--blue-soft);border:1px solid #CBD9F0;border-left:4px solid var(--blue);border-radius:10px;padding:14px 18px;font-size:.95rem}
+.example-box strong{color:var(--blue)}
+.example-box ul{margin:8px 0 0 18px}
+.example-box li{margin-bottom:5px}
+.example-box ol{margin:8px 0 0 20px}
+.example-box p{margin:10px 0 0}
+
+.diagram{background:#FBFCFE;border:1px solid var(--line);border-radius:12px;padding:18px 14px 8px;overflow-x:auto;background-image:linear-gradient(rgba(46,90,172,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(46,90,172,.05) 1px,transparent 1px);background-size:20px 20px}
+.diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.diagram-caption{text-align:center;font-size:.8rem;color:var(--ink-soft);padding:8px 6px 10px;font-style:italic}
+
+.code-wrap{margin-top:6px;border-radius:12px;overflow:hidden;border:1px solid #22303D}
+.code-title{display:flex;justify-content:space-between;align-items:center;background:#1B2836;color:#9FB3C8;font-family:var(--mono);font-size:.75rem;padding:8px 14px}
+.code-title button{font-family:var(--mono);font-size:.7rem;background:#2B3B4D;color:#CFE0F0;border:none;border-radius:6px;padding:4px 10px;cursor:pointer}
+.code-title button:hover{background:var(--teal);color:#fff}
+pre[class*=language-]{margin:0!important;border-radius:0!important;font-size:.83rem!important;line-height:1.55!important;background:var(--code-bg)!important}
+code[class*=language-]{font-family:var(--mono)!important}
+
+.options-table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:6px}
+.options-table th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);border-bottom:2px solid var(--line);padding:8px 10px}
+.options-table td{border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top}
+.options-table td:first-child{font-weight:600;white-space:nowrap}
+.pill{display:inline-block;font-size:.68rem;font-weight:600;border-radius:99px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+.pill.rec{background:var(--teal-soft);color:var(--teal)}
+.pill.dep{background:var(--danger-soft);color:var(--danger)}
+
+.oneliner{margin-top:22px;background:var(--teal-soft);border:1px solid #BFE4DA;border-radius:10px;padding:14px 18px;font-size:.95rem}
+.oneliner strong{color:var(--teal)}
+
+.mistake{margin-top:10px;background:var(--danger-soft);border:1px solid #F0CFC5;border-left:4px solid var(--danger);border-radius:10px;padding:12px 18px;font-size:.9rem}
+.mistake strong{color:var(--danger)}
+
+/* svg shared classes */
+.sb{fill:#fff;stroke:#2E5AAC;stroke-width:1.6;rx:10}
+.st{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;fill:#17222C}
+.ss{font-family:'Inter',sans-serif;font-size:10.5px;fill:#4A5865}
+.sl{font-family:'JetBrains Mono',monospace;font-size:10px;fill:#4A5865}
+.arrow{stroke:#4A5865;stroke-width:1.6;fill:none}
+.arrow-red{stroke:#D6482B;stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+.arrow-green{stroke:#0E8A72;stroke-width:1.8;fill:none}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;height:auto;border-right:none;border-bottom:1px solid var(--line);padding:18px 0}
+  .nav{display:flex;flex-wrap:wrap;gap:6px}
+  .nav a{margin-bottom:0}
+  .concept{padding:22px 18px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="brand">Microservices <span>/ Top 15</span></div>
+  <div class="brand-sub">Interview study guide · Java + Spring Boot</div>
+  <nav class="nav">
+    <a href="#c1"><span class="n">01</span>Service Decomposition</a>
+    <a href="#c2"><span class="n">02</span>Database per Service</a>
+    <a href="#c3"><span class="n">03</span>API Gateway</a>
+    <a href="#c4"><span class="n">04</span>Service Discovery</a>
+    <a href="#c5"><span class="n">05</span>Circuit Breaker</a>
+    <a href="#c6"><span class="n">06</span>Saga Pattern</a>
+    <a href="#c7"><span class="n">07</span>Event-Driven Communication</a>
+    <a href="#c8"><span class="n">08</span>Transactional Outbox</a>
+    <a href="#c9"><span class="n">09</span>Logging &amp; Tracing</a>
+    <a href="#c10"><span class="n">10</span>Containers &amp; Kubernetes</a>
+    <a href="#c11"><span class="n">11</span>SQL vs NoSQL</a>
+    <a href="#c12"><span class="n">12</span>Caching (Redis)</a>
+    <a href="#c13"><span class="n">13</span>CQRS</a>
+    <a href="#c14"><span class="n">14</span>Idempotency</a>
+    <a href="#c15"><span class="n">15</span>Strangler Fig</a>
+  </nav>
+</aside>
+
+<main>
+<header class="hero">
+  <h1>15 microservices concepts, <em>explained like you're talking to a friend</em></h1>
+  <p>Every concept follows the same recipe: a plain-words definition, a real-life analogy, a diagram, a real system example, and runnable Java + Spring Boot code. No jargon walls. If a sentence needs to be read twice, it has failed.</p>
+  <div class="chips">
+    <span class="chip">Java 17</span><span class="chip">Spring Boot 3</span><span class="chip">Kafka</span><span class="chip">Resilience4j</span><span class="chip">Kubernetes</span><span class="chip">Redis</span><span class="chip">MongoDB</span><span class="chip">Cassandra</span>
+  </div>
+</header>
+<!-- ================= 01 SERVICE DECOMPOSITION ================= -->
+<section class="concept" id="c1">
+  <div class="c-head"><span class="c-num">01</span><h2>Service Decomposition</h2><span class="c-tag">Design</span></div>
+  <p class="c-def">Instead of building one giant application, you <strong>break the system into small services, one per business capability</strong>. Each service does one job, has its own team, its own code, and can be deployed on its own.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🍽️ <strong>A restaurant kitchen.</strong> A small food stall has one cook doing everything — starters, main course, dessert, billing. If he falls sick, the stall shuts. A big restaurant has separate stations: grill, dessert, drinks, billing. Each station works independently. If the dessert guy is slow, your biryani still arrives on time. That's decomposition — split by <em>what job it does</em>, not by who is free.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 250" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker></defs>
+    <!-- monolith -->
+    <rect x="30" y="40" width="200" height="170" rx="12" fill="#FBEAE5" stroke="#D6482B" stroke-width="1.6"/>
+    <text x="130" y="30" text-anchor="middle" class="st" fill="#D6482B">Monolith (one big app)</text>
+    <rect x="50" y="60" width="160" height="30" rx="6" class="sb"/><text x="130" y="79" text-anchor="middle" class="ss">Users + Login code</text>
+    <rect x="50" y="100" width="160" height="30" rx="6" class="sb"/><text x="130" y="119" text-anchor="middle" class="ss">Orders code</text>
+    <rect x="50" y="140" width="160" height="30" rx="6" class="sb"/><text x="130" y="159" text-anchor="middle" class="ss">Payments code</text>
+    <text x="130" y="195" text-anchor="middle" class="sl">1 deploy · 1 crash kills all</text>
+    <!-- arrow -->
+    <path d="M250 125 L320 125" class="arrow" marker-end="url(#a1)"/>
+    <text x="285" y="115" text-anchor="middle" class="sl">split</text>
+    <!-- services -->
+    <rect x="340" y="35" width="170" height="52" rx="10" class="sb"/>
+    <text x="425" y="57" text-anchor="middle" class="st">User Service</text>
+    <text x="425" y="74" text-anchor="middle" class="ss">signup, login, profile</text>
+    <rect x="340" y="99" width="170" height="52" rx="10" class="sb"/>
+    <text x="425" y="121" text-anchor="middle" class="st">Order Service</text>
+    <text x="425" y="138" text-anchor="middle" class="ss">place &amp; track orders</text>
+    <rect x="340" y="163" width="170" height="52" rx="10" class="sb"/>
+    <text x="425" y="185" text-anchor="middle" class="st">Payment Service</text>
+    <text x="425" y="202" text-anchor="middle" class="ss">charge, refund</text>
+    <rect x="545" y="35" width="170" height="52" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="630" y="57" text-anchor="middle" class="st">Deploy alone ✔</text>
+    <text x="630" y="74" text-anchor="middle" class="ss">ship Order fix at 2 PM</text>
+    <rect x="545" y="99" width="170" height="52" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="630" y="121" text-anchor="middle" class="st">Scale alone ✔</text>
+    <text x="630" y="138" text-anchor="middle" class="ss">10 Order pods, 2 User pods</text>
+    <rect x="545" y="163" width="170" height="52" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="630" y="185" text-anchor="middle" class="st">Fail alone ✔</text>
+    <text x="630" y="202" text-anchor="middle" class="ss">Payment down ≠ site down</text>
+  </svg>
+  <div class="diagram-caption">One big app becomes small services, each owning one business job.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🛒 E-commerce at Amazon / Flipkart scale — one sale night, two worlds:</strong>
+    <ol>
+      <li><strong>The monolith world:</strong> a junior dev fixes a typo in the <em>refund email template</em>. To ship it, the entire website must be re-deployed. The deploy goes bad → checkout is down for 10 minutes during the sale → crores lost over a typo.</li>
+      <li><strong>Scaling is all-or-nothing:</strong> sale traffic is uneven — search gets 10× load, payments 8×, "edit profile" almost nothing. But a monolith scales as one block, so you must run 100 huge servers to scale <em>everything</em>, including parts nobody is touching.</li>
+      <li><strong>One weak corner sinks the ship:</strong> a memory leak in the Reviews code crashes the app — and takes ordering down with it.</li>
+      <li><strong>The decomposed world:</strong> the Search team deploys 5 times a day without asking anyone. Only Order and Payment pods scale to 50 during the sale. Reviews service crashes? The product page simply hides reviews — <strong>people can still buy</strong>.</li>
+    </ol>
+    <p>This is literally Amazon's own story: they broke their monolith into services in the early 2000s and gave each small team full ownership — "you build it, you run it". That decision is what made fast, independent shipping possible at their size.</p>
+  </div>
+
+  <div class="block-label">Code — same endpoint, two worlds</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>OrderController.java — lives in its own Spring Boot app (order-service)</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">// order-service — a complete, small Spring Boot app. Nothing else lives here.
+@SpringBootApplication
+public class OrderServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(OrderServiceApplication.class, args);
+    }
+}
+
+@RestController
+@RequestMapping("/api/orders")
+public class OrderController {
+
+    private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;OrderResponse&gt; placeOrder(@RequestBody OrderRequest request) {
+        // This service ONLY knows about orders.
+        // It does NOT contain user code or payment code.
+        // To charge money, it will CALL payment-service over HTTP or Kafka.
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(orderService.placeOrder(request));
+    }
+}</code></pre>
+  </div>
+
+  <div class="block-label">How do you decide the split?</div>
+  <table class="options-table">
+    <tr><th>Rule</th><th>Meaning in simple words</th></tr>
+    <tr><td>By business capability</td><td>One service = one thing the business does (orders, payments, shipping). Not "controller service" and "database service".</td></tr>
+    <tr><td>Single responsibility</td><td>If you can't describe the service in one sentence, it's too big.</td></tr>
+    <tr><td>Team ownership</td><td>One small team should be able to own, build, and deploy it end to end.</td></tr>
+    <tr><td>Don't start too small</td><td>200 tiny services is worse than 8 sensible ones. Split more only when pain appears.</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "We decompose by business capability, not by technical layer — each service owns one job, its own data, and its own deployment lifecycle."</div>
+</section>
+
+<!-- ================= 02 DATABASE PER SERVICE ================= -->
+<section class="concept" id="c2">
+  <div class="c-head"><span class="c-num">02</span><h2>Database per Service</h2><span class="c-tag">Data</span></div>
+  <p class="c-def">Each service gets its <strong>own database that nobody else can touch</strong>. Other services never run SQL on your tables — if they want your data, they must ask through your API or listen to your events.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🏪 <strong>Shops in a mall.</strong> Every shop keeps its own cash drawer and its own ledger. The shoe shop cannot open the coffee shop's drawer "just to check something". If the shoe shop wants to know coffee sales, it has to <em>ask</em> the coffee shop. Annoying? Slightly. But nobody can silently mess up someone else's accounts.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 240" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a2r" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#D6482B"/></marker></defs>
+    <rect x="40" y="30" width="180" height="50" rx="10" class="sb"/><text x="130" y="51" text-anchor="middle" class="st">User Service</text><text x="130" y="68" text-anchor="middle" class="ss">profiles, login</text>
+    <rect x="280" y="30" width="180" height="50" rx="10" class="sb"/><text x="370" y="51" text-anchor="middle" class="st">Post Service</text><text x="370" y="68" text-anchor="middle" class="ss">photos, captions</text>
+    <rect x="520" y="30" width="180" height="50" rx="10" class="sb"/><text x="610" y="51" text-anchor="middle" class="st">Feed Service</text><text x="610" y="68" text-anchor="middle" class="ss">home timeline</text>
+    <!-- db cylinders -->
+    <g><ellipse cx="130" cy="140" rx="55" ry="12" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><rect x="75" y="140" width="110" height="45" fill="#E8EEF9" stroke="none"/><line x1="75" y1="140" x2="75" y2="185" stroke="#2E5AAC" stroke-width="1.5"/><line x1="185" y1="140" x2="185" y2="185" stroke="#2E5AAC" stroke-width="1.5"/><ellipse cx="130" cy="185" rx="55" ry="12" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><text x="130" y="168" text-anchor="middle" class="st">PostgreSQL</text></g>
+    <g><ellipse cx="370" cy="140" rx="55" ry="12" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><rect x="315" y="140" width="110" height="45" fill="#E8EEF9" stroke="none"/><line x1="315" y1="140" x2="315" y2="185" stroke="#2E5AAC" stroke-width="1.5"/><line x1="425" y1="140" x2="425" y2="185" stroke="#2E5AAC" stroke-width="1.5"/><ellipse cx="370" cy="185" rx="55" ry="12" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><text x="370" y="168" text-anchor="middle" class="st">Cassandra</text></g>
+    <g><ellipse cx="610" cy="140" rx="55" ry="12" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><rect x="555" y="140" width="110" height="45" fill="#E8EEF9" stroke="none"/><line x1="555" y1="140" x2="555" y2="185" stroke="#2E5AAC" stroke-width="1.5"/><line x1="665" y1="140" x2="665" y2="185" stroke="#2E5AAC" stroke-width="1.5"/><ellipse cx="610" cy="185" rx="55" ry="12" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><text x="610" y="168" text-anchor="middle" class="st">Redis</text></g>
+    <path d="M130 80 L130 126" class="arrow" marker-end="url(#a2)"/>
+    <path d="M370 80 L370 126" class="arrow" marker-end="url(#a2)"/>
+    <path d="M610 80 L610 126" class="arrow" marker-end="url(#a2)"/>
+    <!-- forbidden cross access -->
+    <path d="M220 65 C 260 110, 300 130, 322 145" class="arrow-red" marker-end="url(#a2r)"/>
+    <text x="240" y="130" class="sl" fill="#D6482B">✗ direct DB access = forbidden</text>
+    <text x="130" y="215" text-anchor="middle" class="sl">right tool per service ↑</text>
+  </svg>
+  <div class="diagram-caption">Each service picks the database that fits its job — and hides it from everyone else.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>📸 Instagram-style app with 2 billion users — why each service picks its own database:</strong>
+    <ol>
+      <li><strong>User Service → PostgreSQL:</strong> the rules are strict — usernames must be unique, one email can't register twice, a password change must fully happen or not at all. This is "correctness first" data, exactly what a relational database with ACID transactions is built for.</li>
+      <li><strong>Post Service → Cassandra:</strong> 100M+ photos are posted per day — a firehose of writes, while reads are simple ("give me post #123"). Cassandra spreads this across hundreds of machines and keeps accepting writes even when some of them die.</li>
+      <li><strong>Feed Service → Redis:</strong> when you open the app, your feed must appear instantly. It's essentially a precomputed list of post IDs per user — a perfect fit for an in-memory store that answers in under a millisecond.</li>
+    </ol>
+    <p><strong>Now the horror story if all three shared one database:</strong> Friday 6 PM, the analytics team runs a heavy report query. It locks tables — and login slows down for the entire planet, even though login has nothing to do with analytics. And the User team can't rename a single column without a meeting with two other teams. With separate databases, the blast radius of any mistake stays inside one service, and each team changes its own schema freely.</p>
+  </div>
+
+  <div class="block-label">Code — each service points at its own DB</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>application.yml — user-service vs post-service (two different apps)</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-yaml"># ---------- user-service/src/main/resources/application.yml ----------
+spring:
+  datasource:
+    url: jdbc:postgresql://user-db:5432/users   # its OWN Postgres
+    username: user_svc
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+# ---------- post-service/src/main/resources/application.yml ----------
+spring:
+  cassandra:                                    # its OWN Cassandra
+    contact-points: post-db-1,post-db-2
+    keyspace-name: posts
+    local-datacenter: dc1
+
+# post-service has NO credentials for user-db.
+# If it needs a username, it calls:  GET http://user-service/api/users/{id}</code></pre>
+  </div>
+
+  <div class="mistake">⚠️ <strong>Common interview trap:</strong> "How do you JOIN across services now?" Answer: you can't, and that's on purpose. You either (a) call the other service's API, (b) keep a local read-only copy updated via events (see concept 07), or (c) do the join in an API Gateway / BFF layer. Never connect to another service's DB.</div>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Database per service gives loose coupling and lets each service pick the right storage engine — the trade-off is no cross-service joins and eventual consistency, which we handle with events."</div>
+</section>
+
+<!-- ================= 03 API GATEWAY ================= -->
+<section class="concept" id="c3">
+  <div class="c-head"><span class="c-num">03</span><h2>API Gateway</h2><span class="c-tag">Traffic</span></div>
+  <p class="c-def">One <strong>single front door</strong> for all clients. The mobile app talks to one URL. The gateway then routes each request to the right internal service, and handles common work — auth checks, rate limiting, SSL — in one place instead of in every service.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🏨 <strong>Hotel receptionist.</strong> You don't wander the hotel looking for the laundry room, the chef, or the electrician. You call the reception. Reception knows exactly which department handles what, blocks strangers from walking into the kitchen, and won't let one guest call 500 times a minute. One number, everything sorted.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker></defs>
+    <rect x="30" y="40" width="130" height="44" rx="10" class="sb"/><text x="95" y="66" text-anchor="middle" class="st">📱 Mobile app</text>
+    <rect x="30" y="108" width="130" height="44" rx="10" class="sb"/><text x="95" y="134" text-anchor="middle" class="st">💻 Web app</text>
+    <rect x="30" y="176" width="130" height="44" rx="10" class="sb"/><text x="95" y="202" text-anchor="middle" class="st">🤝 Partner API</text>
+    <path d="M160 62 L250 115" class="arrow" marker-end="url(#a3)"/>
+    <path d="M160 130 L250 130" class="arrow" marker-end="url(#a3)"/>
+    <path d="M160 198 L250 145" class="arrow" marker-end="url(#a3)"/>
+    <rect x="255" y="85" width="180" height="92" rx="12" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.8"/>
+    <text x="345" y="110" text-anchor="middle" class="st">API Gateway</text>
+    <text x="345" y="129" text-anchor="middle" class="ss">✔ verify JWT</text>
+    <text x="345" y="145" text-anchor="middle" class="ss">✔ rate limit (100 req/min)</text>
+    <text x="345" y="161" text-anchor="middle" class="ss">✔ route by path</text>
+    <path d="M435 105 L525 62" class="arrow" marker-end="url(#a3)"/>
+    <path d="M435 131 L525 131" class="arrow" marker-end="url(#a3)"/>
+    <path d="M435 157 L525 200" class="arrow" marker-end="url(#a3)"/>
+    <text x="470" y="80" class="sl">/orders/**</text>
+    <text x="463" y="124" class="sl">/products/**</text>
+    <text x="468" y="196" class="sl">/users/**</text>
+    <rect x="530" y="40" width="170" height="44" rx="10" class="sb"/><text x="615" y="66" text-anchor="middle" class="st">Order Service</text>
+    <rect x="530" y="108" width="170" height="44" rx="10" class="sb"/><text x="615" y="134" text-anchor="middle" class="st">Product Service</text>
+    <rect x="530" y="176" width="170" height="44" rx="10" class="sb"/><text x="615" y="202" text-anchor="middle" class="st">User Service</text>
+  </svg>
+  <div class="diagram-caption">Clients see one URL. The gateway checks, limits, and routes.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🛵 Food delivery app (Swiggy / Zomato style) — following one tap through the gateway:</strong>
+    <ol>
+      <li>You tap <strong>"Place order"</strong>. The app calls one address: <code>api.swiggy.com/api/orders</code>. That is the only hostname the app has ever known.</li>
+      <li><strong>The gateway checks your JWT</strong> — valid? not expired? If not, the request is rejected right at the door. Order Service never even wastes a thread on it.</li>
+      <li><strong>Rate limit check</strong> — this IP has sent 900 requests in the last minute? That's a bot scraping menus. Blocked here, before it can hurt anything inside.</li>
+      <li><strong>Routing:</strong> <code>/api/orders/**</code> → Order Service, <code>/api/track/**</code> → Delivery Tracking, <code>/api/restaurants/**</code> → Restaurant Service. Your phone knows none of this internal map.</li>
+    </ol>
+    <p>The payoff: when the company launches a "Dine-out" feature, it's one new route in the gateway — <strong>50 million already-installed apps don't change at all</strong>. Teams can rename, split, or merge internal services freely; the outside URL stays stable forever. Without a gateway: 15 services each repeating the same auth code, the mobile app hard-coding 15 hostnames, and one leaked internal URL becoming a security hole.</p>
+  </div>
+
+  <div class="block-label">Code — Spring Cloud Gateway routes</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>application.yml — gateway-service (Spring Cloud Gateway)</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-yaml">spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-route
+          uri: lb://order-service        # "lb" = pick a healthy instance via discovery
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - name: RequestRateLimiter   # protect order-service from abuse
+              args:
+                redis-rate-limiter.replenishRate: 100   # 100 requests/sec allowed
+                redis-rate-limiter.burstCapacity: 200
+
+        - id: product-route
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**</code></pre>
+  </div>
+  <div class="code-wrap" style="margin-top:14px">
+    <div class="code-title"><span>JwtAuthFilter.java — check the token once, at the front door</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">@Component
+public class JwtAuthFilter implements GlobalFilter {
+
+    @Override
+    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
+
+        if (authHeader == null || !isValidJwt(authHeader.replace("Bearer ", ""))) {
+            // Stop bad requests HERE. Order/Product services never even see them.
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+        return chain.filter(exchange); // token OK → forward to the right service
+    }
+}</code></pre>
+  </div>
+
+  <div class="block-label">Options</div>
+  <table class="options-table">
+    <tr><th>Option</th><th>When to pick it</th></tr>
+    <tr><td>Spring Cloud Gateway <span class="pill rec">Java-friendly</span></td><td>You're a Spring shop and want routes as code/config you fully control.</td></tr>
+    <tr><td>AWS API Gateway</td><td>You're on AWS and want a managed gateway (pay per request, zero servers).</td></tr>
+    <tr><td>Kong / NGINX</td><td>Polyglot company, very high traffic, gateway managed by platform team.</td></tr>
+    <tr><td>Netflix Zuul 1 <span class="pill dep">legacy</span></td><td>Old blocking gateway — mention only as history; replaced by Spring Cloud Gateway.</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "The gateway is the single entry point that centralizes cross-cutting concerns — auth, rate limiting, routing — so individual services stay simple and clients stay stable."</div>
+</section>
+<!-- ================= 04 SERVICE DISCOVERY ================= -->
+<section class="concept" id="c4">
+  <div class="c-head"><span class="c-num">04</span><h2>Service Discovery</h2><span class="c-tag">Traffic</span></div>
+  <p class="c-def">Services find each other <strong>by name, not by IP address</strong>. Instances come and go constantly (crashes, deploys, auto-scaling), so IPs change every hour. A registry keeps a live list: "order-service is currently at these 3 addresses."</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">📞 <strong>Saved contacts vs memorized numbers.</strong> You call "Mom", not +91-98XXXXXX21. If Mom changes her SIM, you update the contact once and every future call still works. Now imagine Mom changes her number 30 times a day — that's what pods do in Kubernetes. Hard-coding IPs is memorizing numbers; service discovery is the contacts app.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 270" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a4g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <rect x="270" y="20" width="200" height="86" rx="12" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.8"/>
+    <text x="370" y="44" text-anchor="middle" class="st">Service Registry (Eureka)</text>
+    <text x="370" y="64" text-anchor="middle" class="sl">payment-service:</text>
+    <text x="370" y="79" text-anchor="middle" class="sl">10.0.1.5 · 10.0.1.9 · 10.0.2.3</text>
+    <text x="370" y="96" text-anchor="middle" class="ss">heartbeat every 30s ❤️</text>
+    <rect x="40" y="170" width="180" height="54" rx="10" class="sb"/>
+    <text x="130" y="192" text-anchor="middle" class="st">Order Service</text>
+    <text x="130" y="210" text-anchor="middle" class="ss">"where is payment-service?"</text>
+    <rect x="500" y="140" width="200" height="34" rx="8" class="sb"/><text x="600" y="161" text-anchor="middle" class="ss">payment pod · 10.0.1.5 ✔</text>
+    <rect x="500" y="182" width="200" height="34" rx="8" class="sb"/><text x="600" y="203" text-anchor="middle" class="ss">payment pod · 10.0.1.9 ✔</text>
+    <rect x="500" y="224" width="200" height="34" rx="8" fill="#FBEAE5" stroke="#D6482B" stroke-width="1.4"/><text x="600" y="245" text-anchor="middle" class="ss" fill="#D6482B">payment pod · 10.0.2.3 ✗ crashed → removed</text>
+    <path d="M170 170 C 210 130, 240 100, 268 80" class="arrow" marker-end="url(#a4)"/>
+    <text x="165" y="120" class="sl">1. ask by name</text>
+    <path d="M300 110 C 260 135, 230 150, 205 165" class="arrow-green" marker-end="url(#a4g)"/>
+    <text x="290" y="145" class="sl" fill="#0E8A72">2. live IP list</text>
+    <path d="M220 197 L495 157" class="arrow-green" marker-end="url(#a4g)"/>
+    <text x="330" y="185" class="sl" fill="#0E8A72">3. call a healthy instance</text>
+    <path d="M600 138 C 560 120, 500 95, 472 80" class="arrow" marker-end="url(#a4)"/>
+    <text x="545" y="105" class="sl">register + heartbeat</text>
+  </svg>
+  <div class="diagram-caption">Instances register themselves; callers ask the registry, never hard-code IPs.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🛒 Flash sale night — how services keep finding each other while everything moves:</strong>
+    <ol>
+      <li><strong>11:58 PM:</strong> payment-service runs 3 pods. The registry lists exactly 3 IPs, kept fresh by heartbeats every few seconds.</li>
+      <li><strong>12:00 AM:</strong> the sale starts. Kubernetes adds 27 new pods — that's 27 IP addresses that <em>did not exist one minute ago</em>. Each new pod registers itself on startup. Order Service keeps calling the same name, <code>http://payment-service</code>, and its calls automatically spread across all 30 instances.</li>
+      <li><strong>12:40 AM:</strong> one pod dies of an OutOfMemoryError. It stops sending heartbeats → the registry drops it within seconds → not a single order gets routed to a dead box.</li>
+      <li><strong>2:00 AM:</strong> traffic drops, pods scale back to 3, all those IPs vanish. Nobody edited a config file all night.</li>
+    </ol>
+    <p>Contrast with the hard-coded world: every scale-up would mean editing config files and redeploying <em>every caller</em>. When scale events happen 30 times a day, that's simply impossible — which is why discovery by name isn't optional in microservices.</p>
+  </div>
+
+  <div class="block-label">Code — call by name with Eureka</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>Order service — registering &amp; calling payment-service by name</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">// 1. Each service registers itself (just add spring-cloud-starter-netflix-eureka-client)
+// application.yml:
+//   spring.application.name: order-service
+//   eureka.client.service-url.defaultZone: http://eureka:8761/eureka
+
+@Configuration
+public class RestClientConfig {
+
+    @Bean
+    @LoadBalanced   // ← the magic: resolves service NAMES via the registry
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+
+@Service
+public class PaymentClient {
+
+    private final RestTemplate restTemplate;
+
+    public PaymentClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public PaymentResponse charge(PaymentRequest request) {
+        // "payment-service" is a NAME, not a host.
+        // Spring asks Eureka for live instances and load-balances between them.
+        return restTemplate.postForObject(
+                "http://payment-service/api/payments",
+                request,
+                PaymentResponse.class);
+    }
+}</code></pre>
+  </div>
+
+  <div class="block-label">Options</div>
+  <table class="options-table">
+    <tr><th>Option</th><th>When to pick it</th></tr>
+    <tr><td>Kubernetes DNS <span class="pill rec">default today</span></td><td>Running on K8s? You get discovery free: <code>http://payment-service</code> just works via Services. No extra infra.</td></tr>
+    <tr><td>Netflix Eureka</td><td>Classic Spring Cloud setup, especially outside Kubernetes (VMs, EC2).</td></tr>
+    <tr><td>HashiCorp Consul</td><td>Polyglot stack, want health checks + key-value config + multi-datacenter.</td></tr>
+    <tr><td>ZooKeeper</td><td>Mostly seen holding up older Kafka clusters; rarely chosen fresh for discovery.</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Instances register with a registry and send heartbeats; callers resolve by logical name and load-balance across healthy instances — on Kubernetes, the platform's DNS and Services give us this for free."</div>
+</section>
+
+<!-- ================= 05 CIRCUIT BREAKER ================= -->
+<section class="concept" id="c5">
+  <div class="c-head"><span class="c-num">05</span><h2>Circuit Breaker</h2><span class="c-tag">Resilience</span></div>
+  <p class="c-def">When a downstream service keeps failing, <strong>stop calling it for a while and fail fast</strong>. Otherwise every request waits for a timeout, your threads get stuck waiting, and YOUR service dies too. One sick service should not infect the whole system — that's called a <em>cascading failure</em>.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">⚡ <strong>The MCB switch in your house.</strong> When there's a short circuit, the MCB trips instantly and cuts power. It doesn't let current keep flowing until your wiring burns. After some time, you flip it back — if the fault is fixed, power flows; if not, it trips again. Same idea: trip fast, protect everything else, retry carefully.</div>
+
+  <div class="block-label">Diagram — the 3 states</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 240" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a5r" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#D6482B"/></marker>
+    <marker id="a5g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <circle cx="120" cy="110" r="55" fill="#E2F3EE" stroke="#0E8A72" stroke-width="2"/>
+    <text x="120" y="105" text-anchor="middle" class="st">CLOSED</text>
+    <text x="120" y="123" text-anchor="middle" class="ss">calls flow normally</text>
+    <circle cx="370" cy="110" r="55" fill="#FBEAE5" stroke="#D6482B" stroke-width="2"/>
+    <text x="370" y="105" text-anchor="middle" class="st">OPEN</text>
+    <text x="370" y="123" text-anchor="middle" class="ss">reject instantly</text>
+    <circle cx="620" cy="110" r="55" fill="#FFF4DE" stroke="#B97609" stroke-width="2"/>
+    <text x="620" y="100" text-anchor="middle" class="st">HALF-OPEN</text>
+    <text x="620" y="118" text-anchor="middle" class="ss">let a few test</text>
+    <text x="620" y="133" text-anchor="middle" class="ss">calls through</text>
+    <path d="M175 95 L313 95" class="arrow-red" marker-end="url(#a5r)"/>
+    <text x="244" y="85" text-anchor="middle" class="sl" fill="#D6482B">&gt;50% calls fail → trip!</text>
+    <path d="M425 95 L563 95" class="arrow" marker-end="url(#a5)"/>
+    <text x="494" y="85" text-anchor="middle" class="sl">wait 30s</text>
+    <path d="M600 163 C 540 210, 200 210, 135 163" class="arrow-green" marker-end="url(#a5g)"/>
+    <text x="370" y="212" text-anchor="middle" class="sl" fill="#0E8A72">test calls succeed → close again ✔</text>
+    <path d="M585 60 C 540 25, 430 25, 393 58" class="arrow-red" marker-end="url(#a5r)"/>
+    <text x="490" y="28" text-anchor="middle" class="sl" fill="#D6482B">test calls still fail → back to OPEN</text>
+  </svg>
+  <div class="diagram-caption">CLOSED = healthy. OPEN = tripped, fail fast. HALF-OPEN = careful probing.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>💳 Fintech checkout — the bank goes down, minute by minute:</strong>
+    <ol>
+      <li><strong>7:00:00 PM:</strong> the bank's API starts hanging — every call now takes 30 seconds to time out.</li>
+      <li><strong>Without a breaker:</strong> within one minute, all 200 Tomcat threads of Payment Service are stuck waiting on the bank. Payment Service freezes. Order Service calls Payment, and now ITS threads get stuck too. The whole checkout is dead — one bank's outage has killed your entire platform. This chain reaction is a <em>cascading failure</em>.</li>
+      <li><strong>With a breaker, 7:00:40:</strong> failures cross 50% of the last 20 calls → the circuit OPENs. New calls now fail in ~1 millisecond and hit the fallback: <em>"Payment queued — we'll confirm shortly"</em>, and the UI offers Cash on Delivery. Threads are free; browsing, ordering, refunds all still work.</li>
+      <li><strong>7:01:10:</strong> HALF-OPEN — 3 careful test calls go through. Bank still down → snap back to OPEN. This repeats quietly in the background.</li>
+      <li><strong>7:19 PM:</strong> the bank recovers → test calls succeed → the circuit CLOSES and queued payments retry. Nobody was paged, and customers saw a polite message instead of an endless spinner.</li>
+    </ol>
+  </div>
+
+  <div class="block-label">Code — Resilience4j in Spring Boot</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>BankClient.java — @CircuitBreaker with a fallback</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">// dependency: io.github.resilience4j:resilience4j-spring-boot3
+@Service
+public class BankClient {
+
+    private final RestTemplate restTemplate;
+
+    public BankClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    @CircuitBreaker(name = "bankApi", fallbackMethod = "chargeFallback")
+    public PaymentResult charge(PaymentRequest request) {
+        return restTemplate.postForObject(
+                "https://bank.example.com/charge", request, PaymentResult.class);
+    }
+
+    // Called automatically when the circuit is OPEN or the call fails.
+    // Same signature + Throwable at the end.
+    private PaymentResult chargeFallback(PaymentRequest request, Throwable t) {
+        // Don't lose the order — park it and retry later.
+        return PaymentResult.pending("Bank is busy. Payment queued, will retry.");
+    }
+}</code></pre>
+  </div>
+  <div class="code-wrap" style="margin-top:14px">
+    <div class="code-title"><span>application.yml — tuning the breaker</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-yaml">resilience4j:
+  circuitbreaker:
+    instances:
+      bankApi:
+        sliding-window-size: 20                  # judge health over last 20 calls
+        failure-rate-threshold: 50               # >50% failed → OPEN the circuit
+        wait-duration-in-open-state: 30s         # stay OPEN for 30s, then HALF-OPEN
+        permitted-number-of-calls-in-half-open-state: 3   # 3 test calls
+        slow-call-duration-threshold: 2s         # a call slower than 2s counts as bad
+        slow-call-rate-threshold: 50</code></pre>
+  </div>
+
+  <div class="block-label">Options for circuit breakers</div>
+  <table class="options-table">
+    <tr><th>Option</th><th>When to pick it</th></tr>
+    <tr><td>Resilience4j <span class="pill rec">recommended</span></td><td>The standard for Spring Boot today. Lightweight, annotation-based, also gives Retry, RateLimiter, Bulkhead, TimeLimiter.</td></tr>
+    <tr><td>Spring Cloud Circuit Breaker</td><td>An abstraction layer — code against one API, plug Resilience4j underneath. Nice if you may swap implementations.</td></tr>
+    <tr><td>Netflix Hystrix <span class="pill dep">deprecated</span></td><td>The pioneer, now in maintenance mode. Know it for interviews; don't use it in new code.</td></tr>
+    <tr><td>Istio / Envoy (service mesh)</td><td>Breaker lives in the infrastructure sidecar, zero code changes — great for polyglot teams on Kubernetes.</td></tr>
+    <tr><td>Alibaba Sentinel</td><td>Popular in very high-traffic setups; adds flow control and adaptive protection.</td></tr>
+  </table>
+
+  <div class="mistake">⚠️ <strong>Common interview trap:</strong> "Circuit breaker vs retry?" Retry helps with <em>brief</em> glitches (one dropped packet). A breaker protects against <em>sustained</em> failure. In fact, blind retries against a dying service make things worse — you triple its load. Real answer: retry with backoff, wrapped inside a circuit breaker, plus a timeout on every call.</div>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "A circuit breaker fails fast when a dependency is unhealthy, preventing thread-pool exhaustion and cascading failures — I use Resilience4j with a fallback that degrades gracefully instead of erroring out."</div>
+</section>
+<!-- ================= 06 SAGA PATTERN ================= -->
+<section class="concept" id="c6">
+  <div class="c-head"><span class="c-num">06</span><h2>Saga Pattern</h2><span class="c-tag">Data</span></div>
+  <p class="c-def">One business action often touches <strong>many services, each with its own database</strong> — so a single ACID transaction is impossible. A saga breaks the big action into small local steps. If a later step fails, you run <strong>compensating actions</strong> that undo the earlier steps.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">✈️ <strong>Booking a holiday.</strong> You book a flight ✔, then a hotel ✔, then a cab — and the cab company says "no cars available". You can't "rollback" a holiday like a database. What do you do? You <em>cancel the hotel</em> and <em>cancel the flight</em> — separate undo actions, one per booking. That's a saga: a chain of steps, each with its own undo button.</div>
+
+  <div class="block-label">Diagram — order saga with compensation</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker>
+    <marker id="a6r" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#D6482B"/></marker></defs>
+    <rect x="30" y="70" width="150" height="56" rx="10" class="sb"/>
+    <text x="105" y="93" text-anchor="middle" class="st">1. Order Service</text>
+    <text x="105" y="111" text-anchor="middle" class="ss">create order (PENDING)</text>
+    <rect x="240" y="70" width="150" height="56" rx="10" class="sb"/>
+    <text x="315" y="93" text-anchor="middle" class="st">2. Payment Service</text>
+    <text x="315" y="111" text-anchor="middle" class="ss">charge ₹2,499 ✔</text>
+    <rect x="450" y="70" width="150" height="56" rx="10" fill="#FBEAE5" stroke="#D6482B" stroke-width="1.8"/>
+    <text x="525" y="93" text-anchor="middle" class="st">3. Inventory Service</text>
+    <text x="525" y="111" text-anchor="middle" class="ss" fill="#D6482B">reserve stock ✗ FAILS</text>
+    <path d="M180 98 L235 98" class="arrow-green" marker-end="url(#a6)"/>
+    <path d="M390 98 L445 98" class="arrow-green" marker-end="url(#a6)"/>
+    <text x="370" y="45" text-anchor="middle" class="st" fill="#0E8A72">→ forward steps (happy path)</text>
+    <!-- compensation -->
+    <path d="M470 130 C 430 170, 390 175, 365 160" class="arrow-red" marker-end="url(#a6r)"/>
+    <rect x="240" y="175" width="150" height="50" rx="10" fill="#FFF4DE" stroke="#B97609" stroke-width="1.5"/>
+    <text x="315" y="196" text-anchor="middle" class="st">↩ Refund ₹2,499</text>
+    <text x="315" y="213" text-anchor="middle" class="ss">compensating action</text>
+    <path d="M238 200 C 190 200, 160 175, 140 132" class="arrow-red" marker-end="url(#a6r)"/>
+    <rect x="30" y="175" width="150" height="50" rx="10" fill="#FFF4DE" stroke="#B97609" stroke-width="1.5"/>
+    <text x="105" y="196" text-anchor="middle" class="st">↩ Cancel order</text>
+    <text x="105" y="213" text-anchor="middle" class="ss">status = CANCELLED</text>
+    <text x="370" y="250" text-anchor="middle" class="sl" fill="#D6482B">← compensation chain runs in reverse order</text>
+    <rect x="630" y="70" width="80" height="56" rx="10" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/>
+    <text x="670" y="93" text-anchor="middle" class="ss">would be:</text>
+    <text x="670" y="110" text-anchor="middle" class="ss">4. Shipping</text>
+  </svg>
+  <div class="diagram-caption">Step 3 fails → refund payment → cancel order. Every step ships with its undo.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🛒 Order #8812 for ₹2,499 — a saga from start to refund:</strong>
+    <ol>
+      <li><strong>Step 1 — Order Service:</strong> creates order #8812 with status PENDING. This is a normal local transaction in its own database. ✔</li>
+      <li><strong>Step 2 — Payment Service:</strong> charges ₹2,499 from your card. ✔ The money has genuinely left your account.</li>
+      <li><strong>Step 3 — Inventory Service:</strong> tries to reserve the phone… but the <em>last unit sold one second earlier</em> to someone else. ✗ FAILS.</li>
+      <li><strong>Compensation, in reverse order:</strong> Payment Service refunds the ₹2,499 → Order Service marks #8812 CANCELLED → you see "Sorry, just sold out — your refund has been initiated."</li>
+    </ol>
+    <p>Why it must work this way at scale: these services live on different machines, maybe different data centers, with different databases. Holding one giant lock across all of them while a user stares at a spinner would collapse under real traffic. Uber books trips the same way (assign driver → authorize payment → start trip — each step undoable). The guarantee that matters: <strong>money is never silently lost</strong> — every rupee is either charged AND delivered, or refunded by a compensating step.</p>
+  </div>
+
+  <div class="block-label">Code — a simple saga orchestrator</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>OrderSagaOrchestrator.java — orchestration style (one brain directs the steps)</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">@Service
+public class OrderSagaOrchestrator {
+
+    private final OrderService orderService;
+    private final PaymentClient paymentClient;
+    private final InventoryClient inventoryClient;
+
+    public OrderSagaOrchestrator(OrderService orderService,
+                                 PaymentClient paymentClient,
+                                 InventoryClient inventoryClient) {
+        this.orderService = orderService;
+        this.paymentClient = paymentClient;
+        this.inventoryClient = inventoryClient;
+    }
+
+    public OrderResult placeOrder(OrderRequest request) {
+        // Step 1: local transaction in order-service DB
+        Order order = orderService.createPending(request);
+
+        // Step 2: charge the customer
+        PaymentResult payment;
+        try {
+            payment = paymentClient.charge(order);
+        } catch (Exception e) {
+            orderService.markCancelled(order.getId());        // undo step 1
+            return OrderResult.failed("Payment failed");
+        }
+
+        // Step 3: reserve stock
+        try {
+            inventoryClient.reserve(order);
+        } catch (Exception e) {
+            paymentClient.refund(payment.getTxnId());          // undo step 2
+            orderService.markCancelled(order.getId());         // undo step 1
+            return OrderResult.failed("Out of stock — amount refunded");
+        }
+
+        orderService.markConfirmed(order.getId());
+        return OrderResult.success(order.getId());
+    }
+}
+// In production the steps usually run via Kafka commands/events (async),
+// and the orchestrator persists saga state so it survives a crash mid-way.</code></pre>
+  </div>
+
+  <div class="block-label">Two flavors of saga</div>
+  <table class="options-table">
+    <tr><th>Flavor</th><th>How it works</th></tr>
+    <tr><td>Orchestration <span class="pill rec">easier to reason about</span></td><td>One central "conductor" (like the code above) tells each service what to do next and triggers undo steps. Tools: Temporal, Camunda, Axon, or a custom Spring service + Kafka.</td></tr>
+    <tr><td>Choreography</td><td>No conductor. Each service reacts to the previous event: Order emits <code>OrderCreated</code> → Payment listens, charges, emits <code>PaymentCompleted</code> → Inventory listens… Simple for 2–3 steps, hard to follow for many.</td></tr>
+  </table>
+
+  <div class="mistake">⚠️ <strong>Common interview trap:</strong> "Why not just use a distributed transaction (2PC)?" Because 2PC needs every participant to lock resources and wait for a coordinator — it's slow, blocks under failure, and most modern stores (Kafka, Cassandra, DynamoDB) don't support it anyway. Sagas trade instant consistency for availability: the system is briefly "in between", but always ends up correct.</div>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "A saga replaces one impossible distributed transaction with a sequence of local transactions plus compensating actions — I prefer orchestration for complex flows because the whole state machine lives in one visible place."</div>
+</section>
+
+<!-- ================= 07 EVENT-DRIVEN COMMUNICATION ================= -->
+<section class="concept" id="c7">
+  <div class="c-head"><span class="c-num">07</span><h2>Event-Driven Communication</h2><span class="c-tag">Messaging</span></div>
+  <p class="c-def">Instead of Service A directly calling B, C, and D, it just <strong>announces "this happened"</strong> on a message broker (like Kafka). Whoever cares, listens. A doesn't know or care who is listening — services get <em>decoupled</em>.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🔔 <strong>YouTube channel notifications.</strong> When a creator uploads a video, they don't personally call each of their 2 million subscribers. They just publish. Everyone who hit the bell gets notified automatically. New subscriber joins? The creator changes nothing. One subscriber's phone is off? The video still exists, waiting for them. Publisher and subscribers never talk directly.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 250" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a7" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker></defs>
+    <rect x="30" y="95" width="160" height="56" rx="10" class="sb"/>
+    <text x="110" y="118" text-anchor="middle" class="st">Order Service</text>
+    <text x="110" y="136" text-anchor="middle" class="ss">publishes &amp; forgets</text>
+    <rect x="255" y="88" width="210" height="70" rx="12" fill="#17222C"/>
+    <text x="360" y="115" text-anchor="middle" class="st" fill="#7BDCC3">Kafka topic</text>
+    <text x="360" y="136" text-anchor="middle" class="sl" fill="#9FB3C8">order-events · "OrderPlaced #8812"</text>
+    <path d="M190 123 L250 123" class="arrow" marker-end="url(#a7)"/>
+    <text x="220" y="113" text-anchor="middle" class="sl">publish</text>
+    <rect x="545" y="20" width="165" height="48" rx="10" class="sb"/>
+    <text x="627" y="40" text-anchor="middle" class="st">Notification Service</text>
+    <text x="627" y="57" text-anchor="middle" class="ss">sends email + SMS</text>
+    <rect x="545" y="100" width="165" height="48" rx="10" class="sb"/>
+    <text x="627" y="120" text-anchor="middle" class="st">Shipping Service</text>
+    <text x="627" y="137" text-anchor="middle" class="ss">creates shipment</text>
+    <rect x="545" y="180" width="165" height="48" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="627" y="200" text-anchor="middle" class="st">Analytics (new!)</text>
+    <text x="627" y="217" text-anchor="middle" class="ss">added later — zero changes upstream</text>
+    <path d="M465 105 L540 50" class="arrow" marker-end="url(#a7)"/>
+    <path d="M465 123 L540 123" class="arrow" marker-end="url(#a7)"/>
+    <path d="M465 142 L540 198" class="arrow" marker-end="url(#a7)"/>
+    <text x="500" y="180" class="sl">subscribe</text>
+  </svg>
+  <div class="diagram-caption">One event, many independent listeners. Adding a listener costs the publisher nothing.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>📸 Instagram — the two seconds after you tap Share:</strong>
+    <ol>
+      <li><strong>9:00:00.000 PM:</strong> you tap <strong>Share</strong>. Post Service saves the photo reference to Cassandra and publishes ONE <code>PostCreated</code> event to Kafka. Total: ~50ms. You see "Posted ✔" and go back to scrolling — your part is completely over.</li>
+      <li><strong>Over the next second, independently and in parallel:</strong> Feed Service pushes the post into your followers' timelines · Notification Service pings your close friends · Media Service generates 5 thumbnail sizes · Analytics counts it · an ML service tags the content. Five teams, zero coordination between them.</li>
+      <li><strong>The failure test:</strong> Notification Service is down for 10 minutes? Its events simply wait in Kafka and get processed when it returns. Friends get pinged a bit late — but your upload never noticed anything.</li>
+    </ol>
+    <p>Now imagine the REST version: posting a photo = 5 synchronous calls. The slowest one holds your spinner hostage, any one failing fails your upload, and adding the ML service means editing and redeploying Post Service. With events, the ML team just subscribed to the topic — the Post Service team didn't even know it happened.</p>
+  </div>
+
+  <div class="block-label">Code — Spring Kafka producer &amp; consumer</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>Producer (order-service) and Consumer (notification-service)</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">// ---------- order-service: publish and move on ----------
+@Service
+public class OrderEventPublisher {
+
+    private final KafkaTemplate&lt;String, OrderPlacedEvent&gt; kafkaTemplate;
+
+    public OrderEventPublisher(KafkaTemplate&lt;String, OrderPlacedEvent&gt; kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    public void publishOrderPlaced(Order order) {
+        OrderPlacedEvent event = new OrderPlacedEvent(
+                order.getId(), order.getUserId(), order.getTotalAmount());
+        // key = orderId → all events of one order land in the same partition, in order
+        kafkaTemplate.send("order-events", order.getId().toString(), event);
+    }
+}
+
+// ---------- notification-service: a completely separate app ----------
+@Component
+public class OrderEventsListener {
+
+    @KafkaListener(topics = "order-events", groupId = "notification-service")
+    public void onOrderPlaced(OrderPlacedEvent event) {
+        // Order Service has no idea this class exists. That's the point.
+        emailService.sendOrderConfirmation(event.userId(), event.orderId());
+    }
+}</code></pre>
+  </div>
+
+  <div class="block-label">Sync call vs event — when to use which?</div>
+  <table class="options-table">
+    <tr><th>Use a direct REST call when…</th><th>Use an event when…</th></tr>
+    <tr><td>You need the answer NOW to continue (e.g., "is this card valid?").</td><td>It's a side effect that can happen a moment later (email, feed update, analytics).</td></tr>
+    <tr><td>The caller must know if it failed.</td><td>Many services care about the same fact.</td></tr>
+    <tr><td>Simple request/response between two services.</td><td>You want to add listeners later without touching the publisher.</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Events decouple producers from consumers in both time and knowledge — the publisher survives consumer outages, and new consumers can be added with zero upstream changes. I use Kafka with the entity ID as the partition key to keep per-entity ordering."</div>
+</section>
+<!-- ================= 08 TRANSACTIONAL OUTBOX ================= -->
+<section class="concept" id="c8">
+  <div class="c-head"><span class="c-num">08</span><h2>Transactional Outbox</h2><span class="c-tag">Messaging</span></div>
+  <p class="c-def">The <strong>dual-write problem</strong>: you save to your database AND publish to Kafka — two separate systems, so one can succeed while the other fails. The fix: write the event into an <strong>outbox table in the same DB transaction</strong> as your data. A separate process then reliably ships outbox rows to Kafka.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">📬 <strong>The office outbox tray.</strong> You finish a contract and, in the same sitting, place a copy in the "outgoing mail" tray on your desk. You don't run to the post office yourself — the office peon collects the tray every 15 minutes and posts everything. If the peon is on chai break, letters just wait safely in the tray. Nothing gets lost, because "signing the contract" and "putting it in the tray" happen together as one action.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a8" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a8g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <rect x="30" y="90" width="160" height="56" rx="10" class="sb"/>
+    <text x="110" y="113" text-anchor="middle" class="st">Order Service</text>
+    <text x="110" y="131" text-anchor="middle" class="ss">saves order</text>
+    <rect x="250" y="45" width="220" height="160" rx="12" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.8"/>
+    <text x="360" y="68" text-anchor="middle" class="st">One DB · ONE transaction ✔</text>
+    <rect x="270" y="82" width="180" height="44" rx="8" fill="#fff" stroke="#2E5AAC" stroke-width="1.3"/>
+    <text x="360" y="100" text-anchor="middle" class="ss">orders table</text>
+    <text x="360" y="117" text-anchor="middle" class="sl">#8812 · CONFIRMED</text>
+    <rect x="270" y="136" width="180" height="52" rx="8" fill="#FFF4DE" stroke="#B97609" stroke-width="1.3"/>
+    <text x="360" y="154" text-anchor="middle" class="ss">outbox table</text>
+    <text x="360" y="170" text-anchor="middle" class="sl">OrderPlaced #8812</text>
+    <text x="360" y="183" text-anchor="middle" class="sl">status: PENDING</text>
+    <path d="M190 118 L245 118" class="arrow" marker-end="url(#a8)"/>
+    <text x="217" y="108" text-anchor="middle" class="sl">commit</text>
+    <rect x="520" y="45" width="190" height="60" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="615" y="70" text-anchor="middle" class="st">Outbox Poller / CDC</text>
+    <text x="615" y="90" text-anchor="middle" class="ss">reads PENDING rows</text>
+    <rect x="520" y="150" width="190" height="55" rx="12" fill="#17222C"/>
+    <text x="615" y="173" text-anchor="middle" class="st" fill="#7BDCC3">Kafka</text>
+    <text x="615" y="192" text-anchor="middle" class="sl" fill="#9FB3C8">order-events topic</text>
+    <path d="M452 162 C 480 140, 495 115, 518 92" class="arrow-green" marker-end="url(#a8g)"/>
+    <path d="M615 105 L615 145" class="arrow-green" marker-end="url(#a8g)"/>
+    <text x="655" y="128" class="sl" fill="#0E8A72">publish, then</text>
+    <text x="655" y="141" class="sl" fill="#0E8A72">mark SENT</text>
+    <text x="370" y="240" text-anchor="middle" class="sl">crash anywhere? row is still in the outbox → retried. Nothing lost.</text>
+  </svg>
+  <div class="diagram-caption">Data + event committed atomically in one DB; a poller ships events to Kafka afterwards.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>💰 Wallet transfer at 9:15 PM — the crash that decides everything:</strong>
+    <ol>
+      <li><strong>The naive code:</strong> line 1 <code>db.save(debit)</code> succeeds — ₹5,000 leaves your wallet. Then the pod is killed (out of memory) <em>before</em> line 2 <code>kafka.send(event)</code> runs.</li>
+      <li><strong>The damage:</strong> your wallet shows −₹5,000, but the Ledger never recorded it and the receiver was never notified. The money is in limbo, and a support human now reconciles it by hand. At even a 0.01% failure rate on millions of daily transfers, that's hundreds of angry tickets every single day.</li>
+      <li><strong>With the outbox:</strong> the debit row and the event row commit in ONE database transaction at 9:15:00. Pod dies right after? Fine — a fresh pod's poller finds the PENDING outbox row at 9:15:02 and publishes it. Nothing is lost.</li>
+      <li><strong>The other crash:</strong> poller publishes to Kafka but dies before marking the row SENT? The event goes out twice — and consumers de-duplicate by event ID (that's idempotency, concept 14).</li>
+    </ol>
+    <p>"At-least-once delivery + idempotent consumers" is exactly how real payment infrastructure — Stripe, PayPal, UPI switches — guarantees an event is never lost. Duplicates are acceptable and handled; <strong>disappearance is not</strong>.</p>
+  </div>
+
+  <div class="block-label">Code — write + outbox in one transaction, poller publishes</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>OrderService.java + OutboxPublisher.java</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">@Service
+public class OrderService {
+
+    private final OrderRepository orderRepository;
+    private final OutboxRepository outboxRepository;
+    private final ObjectMapper objectMapper;
+
+    // ONE local ACID transaction — both rows, or none. No dual-write problem.
+    @Transactional
+    public Order placeOrder(OrderRequest request) throws JsonProcessingException {
+        Order order = orderRepository.save(Order.confirmed(request));
+
+        OutboxEvent event = new OutboxEvent(
+                "Order",                                   // aggregate type
+                order.getId().toString(),                  // aggregate id
+                "OrderPlaced",                             // event type
+                objectMapper.writeValueAsString(order));   // payload (JSON)
+        outboxRepository.save(event);                      // same DB, same txn
+
+        return order;
+    }
+}
+
+@Component
+public class OutboxPublisher {
+
+    private final OutboxRepository outboxRepository;
+    private final KafkaTemplate&lt;String, String&gt; kafkaTemplate;
+
+    @Scheduled(fixedDelay = 2000)   // every 2s: pick up pending letters from the tray
+    public void publishPendingEvents() {
+        List&lt;OutboxEvent&gt; pending = outboxRepository.findTop100ByStatusOrderByCreatedAt("PENDING");
+
+        for (OutboxEvent event : pending) {
+            kafkaTemplate.send("order-events", event.getAggregateId(), event.getPayload())
+                         .whenComplete((result, ex) -> {
+                             if (ex == null) {
+                                 event.setStatus("SENT");   // mark done only after Kafka ack
+                                 outboxRepository.save(event);
+                             }
+                             // on failure: stays PENDING → retried next cycle
+                         });
+        }
+    }
+}
+// Consumers must be IDEMPOTENT (handle duplicates) — this design is
+// "at-least-once": an event may be sent twice, but never zero times.</code></pre>
+  </div>
+
+  <div class="block-label">Options for shipping the outbox</div>
+  <table class="options-table">
+    <tr><th>Option</th><th>When to pick it</th></tr>
+    <tr><td>Polling publisher <span class="pill rec">simplest</span></td><td>A @Scheduled job like above. Easy, works everywhere. Small delay (poll interval) and some DB load.</td></tr>
+    <tr><td>CDC with Debezium</td><td>Debezium tails the DB's transaction log (WAL/binlog) and streams outbox rows to Kafka — near real-time, no polling queries, the production-grade choice.</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "The outbox pattern solves the dual-write problem: the state change and the event commit atomically in one local transaction, and a poller or Debezium CDC relays events to Kafka with at-least-once delivery — consumers handle dedup via idempotency."</div>
+</section>
+
+<!-- ================= 09 LOGGING & TRACING ================= -->
+<section class="concept" id="c9">
+  <div class="c-head"><span class="c-num">09</span><h2>Centralized Logging &amp; Distributed Tracing</h2><span class="c-tag">Observability</span></div>
+  <p class="c-def">One user click can travel through 6 services. When it's slow or broken, you need to see the <strong>whole journey as one story</strong>. Tracing gives every request a <strong>trace ID</strong> that travels with it across services; centralized logging puts all logs in one searchable place, tagged with that ID.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">📦 <strong>Courier tracking number.</strong> Your parcel goes Pune hub → Mumbai hub → flight → Delhi hub → delivery van. One tracking number follows it everywhere, and the app shows every checkpoint with timestamps: you instantly see it's been stuck at Mumbai for 2 days. Without the number, you'd be phoning five different warehouses asking "have you seen a brown box?" — that's grepping logs on 6 servers.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a9" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker></defs>
+    <rect x="30" y="40" width="140" height="48" rx="10" class="sb"/>
+    <text x="100" y="60" text-anchor="middle" class="st">API Gateway</text>
+    <text x="100" y="77" text-anchor="middle" class="sl">traceId: 7f3a</text>
+    <rect x="220" y="40" width="140" height="48" rx="10" class="sb"/>
+    <text x="290" y="60" text-anchor="middle" class="st">Order Service</text>
+    <text x="290" y="77" text-anchor="middle" class="sl">traceId: 7f3a</text>
+    <rect x="410" y="40" width="140" height="48" rx="10" fill="#FBEAE5" stroke="#D6482B" stroke-width="1.6"/>
+    <text x="480" y="60" text-anchor="middle" class="st">Payment Service</text>
+    <text x="480" y="77" text-anchor="middle" class="sl" fill="#D6482B">traceId: 7f3a · SLOW</text>
+    <rect x="600" y="40" width="110" height="48" rx="10" class="sb"/>
+    <text x="655" y="60" text-anchor="middle" class="st">Bank API</text>
+    <text x="655" y="77" text-anchor="middle" class="sl">traceId: 7f3a</text>
+    <path d="M170 64 L215 64" class="arrow" marker-end="url(#a9)"/>
+    <path d="M360 64 L405 64" class="arrow" marker-end="url(#a9)"/>
+    <path d="M550 64 L595 64" class="arrow" marker-end="url(#a9)"/>
+    <!-- waterfall -->
+    <rect x="120" y="125" width="520" height="115" rx="12" fill="#17222C"/>
+    <text x="380" y="147" text-anchor="middle" class="st" fill="#7BDCC3">Trace 7f3a in Jaeger — total 2.31s</text>
+    <rect x="150" y="160" width="460" height="12" rx="4" fill="#2E5AAC"/><text x="145" y="170" text-anchor="end" class="sl" fill="#9FB3C8">gateway</text>
+    <rect x="170" y="178" width="420" height="12" rx="4" fill="#2E5AAC"/><text x="165" y="188" text-anchor="end" class="sl" fill="#9FB3C8">order</text>
+    <rect x="200" y="196" width="380" height="12" rx="4" fill="#D6482B"/><text x="195" y="206" text-anchor="end" class="sl" fill="#9FB3C8">payment</text>
+    <rect x="230" y="214" width="330" height="12" rx="4" fill="#D6482B"/><text x="225" y="224" text-anchor="end" class="sl" fill="#9FB3C8">bank</text>
+    <text x="600" y="224" class="sl" fill="#D6482B">← 2.1s here!</text>
+  </svg>
+  <div class="diagram-caption">Same trace ID at every hop → a waterfall view shows exactly where time went.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>💼 SaaS company, Monday morning — solving "checkout is slow" in six minutes:</strong>
+    <ol>
+      <li><strong>10:00 AM:</strong> a ticket arrives — "checkout takes 4+ seconds for some users." Six services are involved. The old way: SSH into six boxes, grep logs by timestamps, and guess. That's hours, maybe days.</li>
+      <li><strong>10:02:</strong> an engineer opens Jaeger, filters <em>service = gateway, duration &gt; 3s</em>, and clicks one trace. The waterfall reads like a story: gateway 5ms → order 30ms → payment 40ms → <strong>bank API 3.8 seconds</strong>. Found it.</li>
+      <li><strong>10:04:</strong> she copies traceId <code>7f3a</code> into Kibana. Every log line from all four services appears in exact order, as one story — payment's logs show the bank returning HTTP 503 and retrying three times.</li>
+      <li><strong>10:06:</strong> root cause posted in the ticket: the bank's certificate expired. Total time: six minutes, zero SSH sessions.</li>
+    </ol>
+    <p>At Netflix or Uber scale — hundreds of services, millions of requests per minute — this isn't a luxury. Without a trace ID stitching the hops together, production debugging is archaeology.</p>
+  </div>
+
+  <div class="block-label">Code — tracing in Spring Boot 3 (Micrometer + OTel)</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>pom.xml deps + logback pattern — IDs propagate automatically</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-xml">&lt;!-- Spring Boot 3: Micrometer Tracing bridges to OpenTelemetry --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micrometer&lt;/groupId&gt;
+  &lt;artifactId&gt;micrometer-tracing-bridge-otel&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.opentelemetry&lt;/groupId&gt;
+  &lt;artifactId&gt;opentelemetry-exporter-otlp&lt;/artifactId&gt;  &lt;!-- send to Jaeger/collector --&gt;
+&lt;/dependency&gt;</code></pre>
+  </div>
+  <div class="code-wrap" style="margin-top:14px">
+    <div class="code-title"><span>application.yml + what a correlated log line looks like</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-yaml">management:
+  tracing:
+    sampling:
+      probability: 1.0            # dev: trace everything; prod: often 0.1 (10%)
+  otlp:
+    tracing:
+      endpoint: http://otel-collector:4318/v1/traces
+
+logging:
+  pattern:
+    # traceId & spanId auto-injected into EVERY log line — no code changes
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+
+# Resulting log line (searchable in Kibana/Loki by traceId):
+# INFO [payment-service,7f3ab21c9e0d4f11,4c1d22aa] Charging order #8812 via bank API
+# RestTemplate/WebClient/Kafka headers carry the traceId to the next service
+# automatically — that's how the story stays connected across hops.</code></pre>
+  </div>
+
+  <div class="block-label">Options</div>
+  <table class="options-table">
+    <tr><th>Concern</th><th>Popular tools</th></tr>
+    <tr><td>Tracing backend</td><td>Jaeger <span class="pill rec">common OSS pick</span>, Zipkin, Grafana Tempo, New Relic / Datadog (managed)</td></tr>
+    <tr><td>Log aggregation</td><td>ELK stack (Elasticsearch + Logstash + Kibana), Grafana Loki, CloudWatch Logs</td></tr>
+    <tr><td>Instrumentation standard</td><td>OpenTelemetry (OTel) — the vendor-neutral standard; instrument once, export anywhere</td></tr>
+    <tr><td>Metrics (the 3rd pillar)</td><td>Micrometer → Prometheus + Grafana dashboards &amp; alerts</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Observability rests on three pillars — logs, metrics, traces — correlated by a trace ID that propagates via HTTP/Kafka headers. With Micrometer + OpenTelemetry in Spring Boot 3, propagation and log correlation are automatic; Jaeger's waterfall pinpoints the slow hop in seconds."</div>
+</section>
+<!-- ================= 10 CONTAINERS & KUBERNETES ================= -->
+<section class="concept" id="c10">
+  <div class="c-head"><span class="c-num">10</span><h2>Containerization &amp; Orchestration</h2><span class="c-tag">Infra</span></div>
+  <p class="c-def">A <strong>container (Docker)</strong> packs your service + JDK + configs into one standard box that runs the same everywhere. An <strong>orchestrator (Kubernetes)</strong> then manages hundreds of these boxes: starts them, restarts crashed ones, spreads traffic, and scales them up and down automatically.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🚢 <strong>Shipping containers.</strong> Before standard containers, loading a ship was chaos — sacks, barrels, crates, each handled differently. Standard steel containers changed everything: the crane doesn't care what's inside; every container fits every ship, truck, and train. Docker is that standard box for software. And Kubernetes is the <em>port authority</em> — deciding which ship carries which containers, replacing damaged ones, adding more ships during festival season.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a10" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <rect x="20" y="30" width="700" height="200" rx="14" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.8"/>
+    <text x="370" y="55" text-anchor="middle" class="st">Kubernetes cluster — flash sale in progress 🔥</text>
+    <!-- node 1 -->
+    <rect x="45" y="75" width="200" height="135" rx="10" fill="#fff" stroke="#2E5AAC" stroke-width="1.4"/>
+    <text x="145" y="95" text-anchor="middle" class="ss">Node 1 (VM)</text>
+    <rect x="60" y="105" width="80" height="40" rx="7" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.3"/><text x="100" y="129" text-anchor="middle" class="sl">order pod</text>
+    <rect x="150" y="105" width="80" height="40" rx="7" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.3"/><text x="190" y="129" text-anchor="middle" class="sl">order pod</text>
+    <rect x="60" y="155" width="80" height="40" rx="7" fill="#FFF4DE" stroke="#B97609" stroke-width="1.3"/><text x="100" y="179" text-anchor="middle" class="sl">user pod</text>
+    <rect x="150" y="155" width="80" height="40" rx="7" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.3"/><text x="190" y="179" text-anchor="middle" class="sl">order pod ✨</text>
+    <!-- node 2 -->
+    <rect x="270" y="75" width="200" height="135" rx="10" fill="#fff" stroke="#2E5AAC" stroke-width="1.4"/>
+    <text x="370" y="95" text-anchor="middle" class="ss">Node 2 (VM)</text>
+    <rect x="285" y="105" width="80" height="40" rx="7" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.3"/><text x="325" y="129" text-anchor="middle" class="sl">order pod</text>
+    <rect x="375" y="105" width="80" height="40" rx="7" fill="#FBEAE5" stroke="#D6482B" stroke-width="1.3"/><text x="415" y="123" text-anchor="middle" class="sl" fill="#D6482B">crashed ✗</text><text x="415" y="137" text-anchor="middle" class="sl" fill="#D6482B">auto-replaced</text>
+    <rect x="285" y="155" width="80" height="40" rx="7" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.3"/><text x="325" y="179" text-anchor="middle" class="sl">order pod ✨</text>
+    <rect x="375" y="155" width="80" height="40" rx="7" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.3"/><text x="415" y="179" text-anchor="middle" class="sl">order pod ✨</text>
+    <!-- hpa -->
+    <rect x="495" y="90" width="205" height="110" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="597" y="113" text-anchor="middle" class="st">HPA (autoscaler)</text>
+    <text x="597" y="135" text-anchor="middle" class="ss">CPU hit 80% →</text>
+    <text x="597" y="152" text-anchor="middle" class="ss">order pods: 3 → 7 ✨</text>
+    <text x="597" y="174" text-anchor="middle" class="ss">sale over → back to 3</text>
+    <path d="M492 145 L465 145" class="arrow-green" marker-end="url(#a10)"/>
+    <text x="370" y="248" text-anchor="middle" class="sl">✨ = pods Kubernetes created on its own · nobody SSH-ed anywhere</text>
+  </svg>
+  <div class="diagram-caption">K8s heals crashed pods and scales the hot service automatically.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🛒 Flash sale night — Kubernetes runs the show, hour by hour:</strong>
+    <ol>
+      <li><strong>11:50 PM:</strong> order-service runs 3 pods at 30% CPU. The autoscaler (HPA) checks metrics every 15 seconds and sees nothing to do.</li>
+      <li><strong>12:00 AM:</strong> the sale starts. CPU hits 85% → HPA scales 3 → 10 → 22 → 30 pods over about two minutes. The scheduler places new pods on nodes with free capacity, and <em>readiness probes</em> hold traffic back until each Spring Boot app has fully started — so no request ever hits a half-booted pod.</li>
+      <li><strong>12:34 AM:</strong> one pod throws OutOfMemoryError and hangs. Its <em>liveness probe</em> fails → Kubernetes kills and replaces it automatically. The other 29 pods absorb the traffic; users never notice.</li>
+      <li><strong>2:00 AM:</strong> CPU falls to 20% → gradual scale-down back to 3 pods. The cloud bill only covers what was actually used.</li>
+    </ol>
+    <p>All night, user-service quietly stayed at 3 pods — that's the payoff of concept 01: you scale only what's hot. And no human SSH-ed into anything. Netflix runs thousands of services exactly this way.</p>
+  </div>
+
+  <div class="block-label">Code — Dockerfile + Kubernetes deployment</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>Dockerfile — the standard box for a Spring Boot service</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-docker"># Multi-stage: build with Maven, ship only the slim runtime
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline          # cache deps layer
+COPY src ./src
+RUN mvn package -DskipTests
+
+FROM eclipse-temurin:17-jre-alpine     # small final image
+WORKDIR /app
+COPY --from=build /app/target/order-service.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]</code></pre>
+  </div>
+  <div class="code-wrap" style="margin-top:14px">
+    <div class="code-title"><span>deployment.yaml — tell K8s the desired state, it keeps it true</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 3                      # "always keep 3 running" — K8s enforces this
+  selector:
+    matchLabels: { app: order-service }
+  template:
+    metadata:
+      labels: { app: order-service }
+    spec:
+      containers:
+        - name: order-service
+          image: myregistry/order-service:1.4.2
+          ports: [{ containerPort: 8080 }]
+          readinessProbe:          # only send traffic when actually ready
+            httpGet: { path: /actuator/health/readiness, port: 8080 }
+          livenessProbe:           # restart the pod if it hangs
+            httpGet: { path: /actuator/health/liveness, port: 8080 }
+          resources:
+            requests: { cpu: "500m", memory: "512Mi" }
+            limits:   { cpu: "1",    memory: "1Gi" }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: order-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: order-service
+  minReplicas: 3
+  maxReplicas: 30                  # flash-sale headroom
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 70 }</code></pre>
+  </div>
+
+  <div class="block-label">The vocabulary map</div>
+  <table class="options-table">
+    <tr><th>Term</th><th>In simple words</th></tr>
+    <tr><td>Image</td><td>The recipe + packed box (built once, immutable).</td></tr>
+    <tr><td>Container / Pod</td><td>A running copy of the image. Pod = K8s wrapper around container(s).</td></tr>
+    <tr><td>Deployment</td><td>"Keep N copies of this image running, roll out new versions safely."</td></tr>
+    <tr><td>Service (K8s)</td><td>Stable name + load balancer in front of the pods (free service discovery!).</td></tr>
+    <tr><td>HPA</td><td>Auto-scaler: watches CPU/memory/custom metrics, adjusts replica count.</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Docker gives every service an identical, portable runtime; Kubernetes turns 'desired state' YAML into reality — self-healing via probes, zero-downtime rolling deploys, and HPA-driven autoscaling per service, which is the whole payoff of decomposing in the first place."</div>
+</section>
+
+<!-- ================= 11 SQL VS NOSQL ================= -->
+<section class="concept" id="c11">
+  <div class="c-head"><span class="c-num">11</span><h2>SQL vs NoSQL — Picking the Right Database</h2><span class="c-tag">Data</span></div>
+  <p class="c-def">There is no "best" database. Each type is <strong>shaped for a different kind of data and a different way of asking questions</strong>. Since every service owns its own database (concept 02), every service can pick the type that fits its job. Using many database types together is called <em>polyglot persistence</em>.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🏠 <strong>Storage at home.</strong> You don't keep everything in one steel almirah. Clothes go in the wardrobe, shoes in the shoe rack, spices in small labelled boxes, milk in the fridge. Each storage is shaped for what it holds and how often you grab it. Forcing everything into the almirah "because it's the biggest one" — milk included — is what using one database for everything looks like.</div>
+
+  <div class="block-label">Diagram — match the data shape to the database</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 300" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a11" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker></defs>
+    <rect x="30" y="110" width="180" height="80" rx="12" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.8"/>
+    <text x="120" y="143" text-anchor="middle" class="st">What shape is</text>
+    <text x="120" y="162" text-anchor="middle" class="st">your data?</text>
+    <rect x="300" y="14" width="415" height="46" rx="9" class="sb"/>
+    <text x="315" y="33" class="st">Relational (SQL) — PostgreSQL · MySQL</text>
+    <text x="315" y="50" class="ss">orders, money, users — strict rules, transactions, joins</text>
+    <rect x="300" y="72" width="415" height="46" rx="9" class="sb"/>
+    <text x="315" y="91" class="st">Key-Value — Redis · DynamoDB</text>
+    <text x="315" y="108" class="ss">cart, session — one key in, one value out, millions/sec</text>
+    <rect x="300" y="130" width="415" height="46" rx="9" class="sb"/>
+    <text x="315" y="149" class="st">Document — MongoDB</text>
+    <text x="315" y="166" class="ss">product catalog — every item has different fields (flexible JSON)</text>
+    <rect x="300" y="188" width="415" height="46" rx="9" class="sb"/>
+    <text x="315" y="207" class="st">Wide-column — Cassandra</text>
+    <text x="315" y="224" class="ss">feeds, viewing history — firehose of writes across many machines</text>
+    <rect x="300" y="246" width="415" height="46" rx="9" class="sb"/>
+    <text x="315" y="265" class="st">Graph — Neo4j</text>
+    <text x="315" y="282" class="ss">"friends of friends who bought this" — relationship walks</text>
+    <path d="M210 130 C 250 100, 265 60, 295 40" class="arrow" marker-end="url(#a11)"/>
+    <path d="M210 142 C 250 125, 262 105, 295 96" class="arrow" marker-end="url(#a11)"/>
+    <path d="M210 152 L295 152" class="arrow" marker-end="url(#a11)"/>
+    <path d="M210 163 C 250 180, 262 200, 295 209" class="arrow" marker-end="url(#a11)"/>
+    <path d="M210 175 C 250 205, 265 245, 295 265" class="arrow" marker-end="url(#a11)"/>
+  </svg>
+  <div class="diagram-caption">Five questions, five shapes, five different databases — all in one system.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🛒 One e-commerce company, five databases — each doing what it's best at:</strong>
+    <ol>
+      <li><strong>Orders &amp; payments → PostgreSQL/MySQL:</strong> money data has strict rules — an order total must equal the sum of its items, a payment can't half-happen. SQL transactions (ACID) enforce this automatically. This is why banks still run their core ledgers on relational databases.</li>
+      <li><strong>Product catalog → MongoDB (document):</strong> a TV has screen size and refresh rate; a shirt has size and fabric; a book has author and page count. In SQL you'd need dozens of mostly-empty columns, or a painful table change every time a new category launches. In MongoDB, each product is one flexible JSON document — new category, new fields, zero migrations.</li>
+      <li><strong>Cart &amp; sessions → DynamoDB / Redis (key-value):</strong> the question is always identical — "give me THE cart of user 831". No joins, no searching, just grab-by-key, millions of times a minute. Amazon's shopping cart famously runs on this idea — its early cart problems are literally why Amazon invented DynamoDB.</li>
+      <li><strong>Viewing history / activity feed → Cassandra (wide-column):</strong> Netflix writes billions of "user watched X at time Y" rows per day into Cassandra. Insane write volume, reads always by user ID, data spread across hundreds of machines — and it keeps working when some of those machines die.</li>
+      <li><strong>"People also bought" → Neo4j (graph):</strong> "friends of friends who bought this item" is a nightmare of self-joins in SQL, but a natural two-step walk in a graph database. It's the same shape as LinkedIn's "People you may know".</li>
+    </ol>
+  </div>
+
+  <div class="block-label">Code — three services, three storage styles</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>Same company: JPA entity vs Mongo document vs Redis key-value</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">// ---------- order-service: money → JPA + PostgreSQL (strict, ACID) ----------
+@Entity
+@Table(name = "orders")
+public class Order {
+    @Id @GeneratedValue
+    private Long id;
+    private Long userId;
+    private BigDecimal totalAmount;   // money → SQL + transactions. Non-negotiable.
+    private String status;
+}
+
+// ---------- product-service: catalog → MongoDB (flexible documents) ----------
+@Document(collection = "products")
+public class Product {
+    @Id
+    private String id;
+    private String name;
+    private Map&lt;String, Object&gt; attributes;  // TV: screenSize; shirt: fabric.
+                                             // New category tomorrow? No migration.
+}
+
+// ---------- cart-service: grab-by-key → Redis ----------
+@Service
+public class CartService {
+
+    private final RedisTemplate&lt;String, Cart&gt; redis;
+
+    public CartService(RedisTemplate&lt;String, Cart&gt; redis) { this.redis = redis; }
+
+    public Cart getCart(String userId) {
+        return redis.opsForValue().get("cart:" + userId);        // one lookup, &lt;1ms
+    }
+
+    public void saveCart(String userId, Cart cart) {
+        redis.opsForValue().set("cart:" + userId, cart, Duration.ofDays(7));
+    }
+}</code></pre>
+  </div>
+
+  <div class="block-label">Cheat sheet</div>
+  <table class="options-table">
+    <tr><th>Type</th><th>Ask yourself</th><th>Real user at scale</th></tr>
+    <tr><td>SQL (Postgres, MySQL)</td><td>"Do I need strict correctness and joins?"</td><td>Every bank ledger; order systems everywhere</td></tr>
+    <tr><td>Key-Value (Redis, DynamoDB)</td><td>"Is it always fetch-by-one-key?"</td><td>Amazon cart, session stores</td></tr>
+    <tr><td>Document (MongoDB)</td><td>"Does every record have different fields?"</td><td>Product catalogs, content/CMS data</td></tr>
+    <tr><td>Wide-column (Cassandra)</td><td>"Huge nonstop writes, reads by partition key?"</td><td>Netflix viewing history, Instagram feed storage</td></tr>
+    <tr><td>Graph (Neo4j)</td><td>"Are relationships the whole point?"</td><td>LinkedIn "People you may know", fraud rings</td></tr>
+  </table>
+
+  <div class="mistake">⚠️ <strong>Common interview trap:</strong> "NoSQL is faster than SQL, right?" No — NoSQL is not "SQL but faster". You give up joins and cross-row transactions to gain scale for one specific access pattern. Golden rule: in NoSQL you model around your <em>queries</em>, not your entities — in Cassandra you literally design one table per query.</div>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "I pick storage per access pattern — ACID and joins → relational; grab-by-key → key-value; flexible schema → document; massive partitioned writes → wide-column; relationship traversal → graph. Database-per-service is what makes mixing them safe."</div>
+</section>
+
+<!-- ================= 12 CACHING ================= -->
+<section class="concept" id="c12">
+  <div class="c-head"><span class="c-num">12</span><h2>Caching with Redis</h2><span class="c-tag">Performance</span></div>
+  <p class="c-def">Keep frequently-read data in <strong>memory, right next door</strong>, so most reads never touch the database at all. RAM answers in under a millisecond; a DB query takes tens of milliseconds. Even more important: the cache <strong>shields the database</strong> from millions of identical queries.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🚰 <strong>Water bottle on your desk.</strong> You don't walk to the kitchen for every sip — you fill a bottle once and drink from it all morning. The bottle can be slightly less fresh than the tap (that's staleness), and it eventually runs empty and needs a refill (that's TTL expiry). One kitchen trip replaced fifty. That's a cache.</div>
+
+  <div class="block-label">Diagram — cache-aside pattern</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 240" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a12" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a12g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <rect x="35" y="80" width="160" height="60" rx="10" class="sb"/>
+    <text x="115" y="105" text-anchor="middle" class="st">Profile Service</text>
+    <text x="115" y="124" text-anchor="middle" class="ss">5M requests / 10 min</text>
+    <rect x="300" y="70" width="170" height="80" rx="12" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.8"/>
+    <text x="385" y="98" text-anchor="middle" class="st">Redis cache</text>
+    <text x="385" y="117" text-anchor="middle" class="sl">profile:virat → JSON</text>
+    <text x="385" y="136" text-anchor="middle" class="ss">TTL 60s · in memory</text>
+    <g><ellipse cx="625" cy="85" rx="60" ry="13" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><rect x="565" y="85" width="120" height="50" fill="#E8EEF9"/><line x1="565" y1="85" x2="565" y2="135" stroke="#2E5AAC" stroke-width="1.5"/><line x1="685" y1="85" x2="685" y2="135" stroke="#2E5AAC" stroke-width="1.5"/><ellipse cx="625" cy="135" rx="60" ry="13" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.5"/><text x="625" y="115" text-anchor="middle" class="st">PostgreSQL</text></g>
+    <path d="M195 100 L295 100" class="arrow-green" marker-end="url(#a12g)"/>
+    <text x="245" y="90" text-anchor="middle" class="sl" fill="#0E8A72">1. check cache first</text>
+    <text x="245" y="125" text-anchor="middle" class="sl" fill="#0E8A72">HIT 95%+ · &lt;1ms ✔</text>
+    <path d="M470 100 L560 100" class="arrow" stroke-dasharray="5 4" marker-end="url(#a12)"/>
+    <text x="515" y="90" text-anchor="middle" class="sl">2. MISS → DB (50ms)</text>
+    <path d="M580 145 C 520 195, 440 195, 400 155" class="arrow" stroke-dasharray="5 4" marker-end="url(#a12)"/>
+    <text x="495" y="200" text-anchor="middle" class="sl">3. store result with TTL 60s</text>
+    <text x="115" y="175" text-anchor="middle" class="sl">on update: delete the key →</text>
+    <text x="115" y="190" text-anchor="middle" class="sl">next read repopulates fresh</text>
+  </svg>
+  <div class="diagram-caption">Check cache → on miss, read DB once → store with TTL. The DB sees ~1 query per key per minute.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>📸 Instagram — a celebrity posts:</strong>
+    <ol>
+      <li><strong>7:00 PM:</strong> Virat Kohli posts a photo. Within 10 minutes, 5 million people open his profile. That is the SAME profile row and the SAME recent posts being requested 5 million times.</li>
+      <li><strong>Without a cache:</strong> 5 million identical SQL queries hammer PostgreSQL. Connections max out, every other page on the site slows down, and the DB can fall over. You've DDoS-ed yourself with your own popularity.</li>
+      <li><strong>With cache-aside:</strong> the very first request misses → reads the DB once (50ms) → stores the result in Redis with a 60-second TTL. The next ~8,000 requests <em>per second</em> are answered from memory in under a millisecond. The database now sees roughly ONE query per minute for that profile instead of millions.</li>
+      <li><strong>He edits his bio:</strong> the service updates the DB and <em>deletes</em> the cache key. The next read misses and repopulates with fresh data. Worst case, a few people see the old bio for a few seconds — totally fine for a bio, never acceptable for a wallet balance (don't cache money blindly).</li>
+    </ol>
+  </div>
+
+  <div class="block-label">Code — Spring's cache abstraction over Redis</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>ProductService.java — @Cacheable + @CacheEvict</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">@Service
+public class ProductService {
+
+    private final ProductRepository productRepository;
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
+    // 1st call: runs the method, stores the result in Redis as "products::42".
+    // Every call after that (until TTL expires) is served straight from Redis —
+    // this method body doesn't even execute.
+    @Cacheable(cacheNames = "products", key = "#productId")
+    public Product getProduct(long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+    }
+
+    // On update: fix the DB, then DELETE the stale cache entry.
+    // (Deleting is safer than trying to update the cache in place.)
+    @CacheEvict(cacheNames = "products", key = "#product.getId()")
+    public Product updateProduct(Product product) {
+        return productRepository.save(product);
+    }
+}</code></pre>
+  </div>
+  <div class="code-wrap" style="margin-top:14px">
+    <div class="code-title"><span>application.yml — Redis as the cache store, with TTL</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-yaml">spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60s     # every entry self-destructs after 60s → self-healing staleness
+  data:
+    redis:
+      host: redis
+      port: 6379</code></pre>
+  </div>
+
+  <div class="block-label">Options</div>
+  <table class="options-table">
+    <tr><th>Option</th><th>When to pick it</th></tr>
+    <tr><td>Redis <span class="pill rec">default choice</span></td><td>Shared cache all service instances see; rich data types; also does locks, counters, queues.</td></tr>
+    <tr><td>Caffeine (in-process)</td><td>Ultra-hot data cached inside the JVM itself (L1), often layered in front of Redis (L2).</td></tr>
+    <tr><td>Memcached</td><td>Dead-simple string cache; fine, but Redis does more and is the ecosystem standard now.</td></tr>
+    <tr><td>CDN (CloudFront)</td><td>Caching for images/static files at the network edge, close to users — a cache too, just geographic.</td></tr>
+  </table>
+
+  <div class="mistake">⚠️ <strong>Common interview trap:</strong> "What's hard about caching?" Invalidation. Rules of thumb: always set a TTL (self-healing), delete the key on update instead of updating it, and never cache data where staleness costs money (wallet balance, live stock count). Bonus term to drop: <strong>cache stampede</strong> — a hot key expires and thousands of requests hit the DB at the same instant; fixed with a small lock or randomized TTL jitter.</div>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Cache-aside with TTL: read cache → on miss read DB and populate → invalidate by deleting on write. It turns five million identical reads into one DB query per TTL window — the cheapest 10× win in system design."</div>
+</section>
+
+<!-- ================= 13 CQRS ================= -->
+<section class="concept" id="c13">
+  <div class="c-head"><span class="c-num">13</span><h2>CQRS — Separate Read &amp; Write Models</h2><span class="c-tag">Architecture</span></div>
+  <p class="c-def">Command Query Responsibility Segregation: <strong>writes and reads take different paths</strong>. Writes (Commands) go into a strict, normalized model. Reads (Queries) are served from a separate model that is <strong>pre-flattened for viewing</strong> — kept up to date by events. Useful when reads and writes have very different shapes or very different scale.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🍽️ <strong>The food-court order screen.</strong> You place your order at the counter — the cashier validates it, takes payment, prints a kitchen ticket. That's the write side: careful, strict, one at a time. But the big "PREPARING → READY" screen the whole crowd watches is a separate display, updated as the kitchen makes progress. Two hundred people read the screen without ever touching the kitchen's ticket book. Writes and reads: separated.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 270" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a13" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a13g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <rect x="25" y="35" width="140" height="50" rx="10" class="sb"/>
+    <text x="95" y="56" text-anchor="middle" class="st">📱 Place order</text>
+    <text x="95" y="74" text-anchor="middle" class="ss">COMMAND (write)</text>
+    <rect x="215" y="30" width="170" height="60" rx="10" class="sb"/>
+    <text x="300" y="52" text-anchor="middle" class="st">Write model</text>
+    <text x="300" y="70" text-anchor="middle" class="ss">Order Service · PostgreSQL</text>
+    <text x="300" y="84" text-anchor="middle" class="ss">strict, normalized, ACID</text>
+    <rect x="435" y="38" width="130" height="44" rx="10" fill="#17222C"/>
+    <text x="500" y="64" text-anchor="middle" class="st" fill="#7BDCC3">Kafka events</text>
+    <rect x="610" y="30" width="110" height="60" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="665" y="56" text-anchor="middle" class="st">Projector</text>
+    <text x="665" y="74" text-anchor="middle" class="ss">applies events</text>
+    <path d="M165 60 L210 60" class="arrow" marker-end="url(#a13)"/>
+    <path d="M385 60 L430 60" class="arrow" marker-end="url(#a13)"/>
+    <path d="M565 60 L605 60" class="arrow" marker-end="url(#a13)"/>
+    <rect x="410" y="150" width="240" height="70" rx="10" fill="#E8EEF9" stroke="#2E5AAC" stroke-width="1.6"/>
+    <text x="530" y="175" text-anchor="middle" class="st">Read model (flattened view)</text>
+    <text x="530" y="193" text-anchor="middle" class="sl">order + product img + delivery ETA</text>
+    <text x="530" y="210" text-anchor="middle" class="ss">MongoDB / Elasticsearch — 1 doc per order</text>
+    <path d="M660 95 C 660 115, 630 135, 600 148" class="arrow" marker-end="url(#a13)"/>
+    <rect x="60" y="160" width="170" height="50" rx="10" class="sb"/>
+    <text x="145" y="181" text-anchor="middle" class="st">📱 "My Orders" page</text>
+    <text x="145" y="199" text-anchor="middle" class="ss">QUERY (read) · millions/hr</text>
+    <path d="M405 185 L235 185" class="arrow-green" marker-end="url(#a13g)"/>
+    <text x="320" y="175" text-anchor="middle" class="sl" fill="#0E8A72">one query · ~10ms · no joins</text>
+    <text x="370" y="252" text-anchor="middle" class="sl">read model lags by ms→seconds = eventual consistency (usually fine for viewing)</text>
+  </svg>
+  <div class="diagram-caption">Writes stay strict on the left; events build a ready-to-show view; reads hit only the view.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🛒 Amazon-style "My Orders" page:</strong>
+    <ol>
+      <li>The page shows order details + product name and image + live delivery status. That data is owned by <em>three different services</em>: Order, Product, and Shipping.</li>
+      <li><strong>The naive way:</strong> every single page view makes 3 network calls and stitches the results together. Millions of views per hour × 3 calls each = enormous load, a slow page, and if Product Service is down, your orders page breaks — even though your orders are fine.</li>
+      <li><strong>The CQRS way:</strong> whenever <code>OrderPlaced</code>, <code>OrderShipped</code>, or <code>ProductUpdated</code> events fire, a small <em>projector</em> updates ONE flattened "order history" document per order in MongoDB or Elasticsearch — name, image URL, status, ETA, all baked in. The page is now a single query taking ~10ms, no matter how many services own the underlying data.</li>
+      <li>Writes never got looser: placing an order still goes through the strict PostgreSQL write model with full validation. Only the <em>viewing</em> got its own fast lane. Instagram's feed (concept 07) is this same idea at extreme scale — write the post once, precompute the read side for millions of followers.</li>
+    </ol>
+  </div>
+
+  <div class="block-label">Code — projector builds the view, reads hit only the view</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>OrderHistoryProjector.java + OrderHistoryController.java</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">// ---------- read-side builder: listens to events, flattens data ----------
+@Component
+public class OrderHistoryProjector {
+
+    private final OrderHistoryViewRepository viewRepository;
+
+    public OrderHistoryProjector(OrderHistoryViewRepository viewRepository) {
+        this.viewRepository = viewRepository;
+    }
+
+    @KafkaListener(topics = {"order-events", "shipping-events"},
+                   groupId = "order-history-projector")
+    public void on(OrderEvent event) {
+        // Merge facts from many services into ONE ready-to-show document
+        OrderHistoryView view = viewRepository.findByOrderId(event.orderId())
+                                              .orElseGet(OrderHistoryView::new);
+        view.apply(event);           // sets status, product name, image URL, ETA...
+        viewRepository.save(view);   // stored flattened in MongoDB
+    }
+}
+
+// ---------- read side: one cheap query. No joins. No service calls. ----------
+@RestController
+@RequestMapping("/api/order-history")
+public class OrderHistoryController {
+
+    private final OrderHistoryViewRepository viewRepository;
+
+    public OrderHistoryController(OrderHistoryViewRepository viewRepository) {
+        this.viewRepository = viewRepository;
+    }
+
+    @GetMapping("/{userId}")
+    public List&lt;OrderHistoryView&gt; history(@PathVariable String userId) {
+        return viewRepository.findByUserIdOrderByCreatedAtDesc(userId);  // ~10ms
+    }
+}</code></pre>
+  </div>
+
+  <div class="mistake">⚠️ <strong>Common interview trap:</strong> "Why not use CQRS everywhere?" Because it's a complexity tax: two models, a projector, and eventual consistency (the view lags writes by milliseconds to seconds — a user might place an order and not see it in history for a second). For a simple CRUD service it's over-engineering. Reach for CQRS when reads and writes differ wildly in shape or scale.</div>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "CQRS keeps the write model strict and builds purpose-shaped read models from events — reads become one cheap query instead of runtime joins across services, at the cost of eventual consistency on the view."</div>
+</section>
+
+<!-- ================= 14 IDEMPOTENCY ================= -->
+<section class="concept" id="c14">
+  <div class="c-head"><span class="c-num">14</span><h2>Idempotency — Safe Retries</h2><span class="c-tag">Resilience</span></div>
+  <p class="c-def">An operation is <strong>idempotent</strong> if doing it twice has the same effect as doing it once. In distributed systems, timeouts, retries, and Kafka's at-least-once delivery mean <strong>duplicates WILL happen</strong> — idempotency is what makes them harmless.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🛗 <strong>The lift button.</strong> Pressing it five times doesn't summon five lifts — the first press registers, the rest are absorbed. Now compare an ATM's cash button: press twice, get paid twice. You want every API you build to behave like the lift button, never like the ATM button.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a14" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a14g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <rect x="25" y="30" width="185" height="52" rx="10" class="sb"/>
+    <text x="117" y="51" text-anchor="middle" class="st">Attempt 1 · Pay ₹999</text>
+    <text x="117" y="69" text-anchor="middle" class="sl">Idempotency-Key: abc-123</text>
+    <rect x="25" y="160" width="185" height="52" rx="10" class="sb"/>
+    <text x="117" y="181" text-anchor="middle" class="st">Attempt 2 (auto-retry)</text>
+    <text x="117" y="199" text-anchor="middle" class="sl">SAME key: abc-123</text>
+    <rect x="300" y="85" width="200" height="80" rx="12" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.8"/>
+    <text x="400" y="110" text-anchor="middle" class="st">Payment Service</text>
+    <text x="400" y="130" text-anchor="middle" class="ss">SETNX idem:abc-123</text>
+    <text x="400" y="148" text-anchor="middle" class="ss">new? charge · seen? replay</text>
+    <path d="M210 60 C 250 65, 270 80, 296 95" class="arrow" marker-end="url(#a14)"/>
+    <path d="M210 185 C 250 180, 270 168, 296 152" class="arrow" marker-end="url(#a14)"/>
+    <rect x="565" y="35" width="150" height="52" rx="10" fill="#FFF4DE" stroke="#B97609" stroke-width="1.5"/>
+    <text x="640" y="56" text-anchor="middle" class="st">Bank charged</text>
+    <text x="640" y="74" text-anchor="middle" class="ss">exactly ONCE ✔</text>
+    <path d="M500 105 C 530 90, 540 75, 562 65" class="arrow" marker-end="url(#a14)"/>
+    <text x="530" y="70" class="sl">key was new</text>
+    <rect x="565" y="150" width="150" height="52" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.5"/>
+    <text x="640" y="171" text-anchor="middle" class="st">Saved response</text>
+    <text x="640" y="189" text-anchor="middle" class="ss">returned · no 2nd charge</text>
+    <path d="M500 145 C 530 155, 540 165, 562 172" class="arrow-green" marker-end="url(#a14g)"/>
+    <text x="518" y="180" class="sl" fill="#0E8A72">key seen → replay</text>
+    <text x="370" y="242" text-anchor="middle" class="sl" fill="#D6482B">without the key: timeout + retry = customer charged twice ✗</text>
+  </svg>
+  <div class="diagram-caption">Same key twice → second attempt gets the saved answer, not a second charge.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>💳 Fintech — the double-payment that never happened:</strong>
+    <ol>
+      <li><strong>9:41 PM:</strong> you tap Pay ₹999. The bank actually charges the card — but the response gets lost in a network blip. Your app only sees a timeout. Did the payment happen? Nobody on the client side knows.</li>
+      <li><strong>The app retries automatically</strong> (which is the right thing to do!) — sending the exact same request with the same <code>Idempotency-Key: abc-123</code> header it generated the first time.</li>
+      <li><strong>Server side:</strong> Payment Service runs <code>SETNX idem:abc-123</code> in Redis. The key already exists from attempt #1 — so it does NOT charge again. It looks up and returns the stored response of the original attempt: "Payment successful."</li>
+      <li><strong>Result:</strong> one charge, one happy customer. This is literally how Stripe's public API works — every POST accepts an Idempotency-Key. Without it, "should I retry a payment timeout?" has no safe answer: don't retry and the customer may never be charged; retry and they may be charged twice.</li>
+    </ol>
+    Same idea on the Kafka side (remember concept 08 delivers <em>at-least-once</em>): consumers record processed event IDs — a unique constraint or dedup table — and silently skip repeats.
+  </div>
+
+  <div class="block-label">Code — idempotency key with Redis SETNX</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>PaymentService.java — claim the key, charge once, replay duplicates</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-java">@Service
+public class PaymentService {
+
+    private final StringRedisTemplate redis;
+
+    public PaymentService(StringRedisTemplate redis) { this.redis = redis; }
+
+    public PaymentResponse pay(String idempotencyKey, PaymentRequest request) {
+
+        // SETNX = "set only if not exists" → atomic claim of this key
+        Boolean firstTime = redis.opsForValue()
+                .setIfAbsent("idem:" + idempotencyKey, "IN_PROGRESS", Duration.ofHours(24));
+
+        if (Boolean.FALSE.equals(firstTime)) {
+            // Duplicate (a retry). Return the ORIGINAL result — do NOT charge again.
+            String saved = redis.opsForValue().get("result:" + idempotencyKey);
+            return PaymentResponse.fromJson(saved);
+        }
+
+        PaymentResponse response = chargeBank(request);   // happens exactly once
+        redis.opsForValue().set("result:" + idempotencyKey,
+                                response.toJson(), Duration.ofHours(24));
+        return response;
+    }
+}
+
+// Controller: pay(@RequestHeader("Idempotency-Key") String key, @RequestBody ...)
+// Belt-and-braces: also put a UNIQUE constraint on payments.idempotency_key
+// in the DB — it catches duplicates even if Redis is wiped.</code></pre>
+  </div>
+
+  <div class="block-label">Strategies</div>
+  <table class="options-table">
+    <tr><th>Strategy</th><th>Where it fits</th></tr>
+    <tr><td>Naturally idempotent verbs</td><td>PUT ("set status to SHIPPED") and DELETE are safe to repeat by design. POST ("add ₹100") is not.</td></tr>
+    <tr><td>Idempotency-Key header <span class="pill rec">for POSTs</span></td><td>Client generates a UUID per logical action; server stores key → response (Stripe's model).</td></tr>
+    <tr><td>DB unique constraint</td><td>Unique index on (orderId) or (idempotencyKey) — the database itself rejects the duplicate insert.</td></tr>
+    <tr><td>Consumer dedup table</td><td>Kafka listeners insert eventId into a processed_events table first; duplicate insert fails → skip.</td></tr>
+  </table>
+
+  <div class="mistake">⚠️ <strong>Common interview trap:</strong> "Can't Kafka just give exactly-once?" Across system boundaries, exactly-once <em>delivery</em> is practically a myth. Real systems do at-least-once delivery + idempotent processing — which from the outside looks exactly-once. Say that sentence in an interview and watch them nod.</div>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Retries and at-least-once delivery make duplicates a question of when, not if — so every money-moving endpoint takes an idempotency key, claims it atomically (SETNX or unique constraint), and replays the stored response for repeats."</div>
+</section>
+
+<!-- ================= 15 STRANGLER FIG ================= -->
+<section class="concept" id="c15">
+  <div class="c-head"><span class="c-num">15</span><h2>Strangler Fig — Monolith to Microservices</h2><span class="c-tag">Architecture</span></div>
+  <p class="c-def">You almost never rewrite a monolith in one go. Instead: put a <strong>gateway in front, carve out one capability at a time</strong> into a new service, route just that traffic to it, and repeat — until the monolith is an empty shell you switch off. Named after the strangler fig tree, which grows around a host tree and slowly replaces it.</p>
+
+  <div class="block-label">Real-life analogy</div>
+  <div class="analogy">🏠 <strong>Renovating room by room — while living in the house.</strong> You don't demolish the whole house and sleep on the street for two years (that's the big-bang rewrite). You redo the kitchen first, keep living normally, then the bathroom, then a bedroom. One day you look around and the whole house is new — and you never moved out.</div>
+
+  <div class="block-label">Diagram</div>
+  <div class="diagram">
+  <svg viewBox="0 0 740 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a15" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4A5865"/></marker>
+    <marker id="a15g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E8A72"/></marker></defs>
+    <rect x="30" y="100" width="130" height="52" rx="10" class="sb"/>
+    <text x="95" y="131" text-anchor="middle" class="st">📱 All clients</text>
+    <rect x="230" y="90" width="160" height="72" rx="12" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.8"/>
+    <text x="310" y="118" text-anchor="middle" class="st">API Gateway</text>
+    <text x="310" y="138" text-anchor="middle" class="ss">the traffic switchboard</text>
+    <path d="M160 126 L225 126" class="arrow" marker-end="url(#a15)"/>
+    <rect x="490" y="25" width="220" height="52" rx="10" fill="#E2F3EE" stroke="#0E8A72" stroke-width="1.6"/>
+    <text x="600" y="46" text-anchor="middle" class="st">Payment Service (new) ✔</text>
+    <text x="600" y="64" text-anchor="middle" class="ss">carved out · owns its data</text>
+    <path d="M390 105 C 430 85, 450 65, 485 52" class="arrow-green" marker-end="url(#a15g)"/>
+    <text x="428" y="68" class="sl" fill="#0E8A72">/api/payments/**</text>
+    <rect x="490" y="100" width="220" height="52" rx="10" fill="#fff" stroke="#B97609" stroke-width="1.6" stroke-dasharray="6 4"/>
+    <text x="600" y="121" text-anchor="middle" class="st">Order Service (next)</text>
+    <text x="600" y="139" text-anchor="middle" class="ss">being carved out this quarter</text>
+    <path d="M390 126 L485 126" class="arrow" stroke-dasharray="5 4" marker-end="url(#a15)"/>
+    <rect x="490" y="175" width="220" height="60" rx="10" fill="#EDF0F4" stroke="#4A5865" stroke-width="1.6"/>
+    <text x="600" y="199" text-anchor="middle" class="st" fill="#4A5865">Old Monolith</text>
+    <text x="600" y="218" text-anchor="middle" class="ss">everything else… shrinking 📉</text>
+    <path d="M390 148 C 430 165, 450 185, 485 197" class="arrow" marker-end="url(#a15)"/>
+    <text x="425" y="188" class="sl">/** (default)</text>
+    <text x="310" y="200" text-anchor="middle" class="sl">rollback = flip one route back · seconds</text>
+  </svg>
+  <div class="diagram-caption">The gateway peels traffic away route by route; the monolith shrinks until it's gone.</div>
+  </div>
+
+  <div class="block-label">Real system example</div>
+  <div class="example-box"><strong>🏦 A 10-year-old e-commerce/banking monolith, migrated safely:</strong>
+    <ol>
+      <li><strong>Month 0:</strong> put an API gateway in front. Change nothing else — every route still goes to the monolith. Users notice nothing, but you now own the front door, which is what makes everything after this possible.</li>
+      <li><strong>Months 1–3:</strong> pick one capability with clean edges — say Notifications. Build notification-service, then flip a single gateway route: <code>/api/notifications/** → new service</code>. Everything else still hits the monolith. Found a bug? Flip the route back in seconds — your rollback plan is one line of config.</li>
+      <li><strong>Months 4–8:</strong> next, Payments — riskier, so run it as a <em>canary</em>: 10% of payment traffic to the new service while watching error rates and latency dashboards, then 50%, then 100%. Real users validated it gradually; no leap of faith.</li>
+      <li><strong>Months 9–24:</strong> repeat, capability by capability. The monolith shrinks like the host tree inside the fig. One quiet Tuesday, the last route flips, the monolith is switched off — and no user ever saw a "we are migrating" banner.</li>
+    </ol>
+    This is how the giants actually did it — Amazon and Netflix each spent <em>years</em> strangling their monoliths piece by piece while shipping features the whole time. The graveyard of "we'll rewrite everything from scratch in 18 months" projects is far larger.
+  </div>
+
+  <div class="block-label">Code — the gateway does the strangling</div>
+  <div class="code-wrap">
+    <div class="code-title"><span>application.yml — carved-out route, canary weights, monolith default</span><button onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-yaml">spring:
+  cloud:
+    gateway:
+      routes:
+        # --- Payments: canary in progress — 10% new service, 90% monolith ---
+        - id: payments-new
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+            - Weight=payments, 10        # 10% of payment traffic
+        - id: payments-legacy
+          uri: http://legacy-monolith:8080
+          predicates:
+            - Path=/api/payments/**
+            - Weight=payments, 90        # dial 10 → 50 → 100 as confidence grows
+
+        # --- Notifications: fully carved out already ---
+        - id: notifications
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+
+        # --- Everything not yet migrated falls through to the monolith ---
+        - id: legacy-default
+          uri: http://legacy-monolith:8080
+          predicates:
+            - Path=/**</code></pre>
+  </div>
+
+  <div class="block-label">Big-bang rewrite vs strangler fig</div>
+  <table class="options-table">
+    <tr><th>Big-bang rewrite</th><th>Strangler fig</th></tr>
+    <tr><td>18+ months of building with zero user value shipped.</td><td>Value ships continuously; migration and features run in parallel.</td></tr>
+    <tr><td>One giant, terrifying cutover day.</td><td>Dozens of tiny, boring cutovers — each reversible in seconds.</td></tr>
+    <tr><td>The old system keeps changing while you rewrite it (you're chasing a moving target).</td><td>Each carved-out piece is frozen, moved, verified, done.</td></tr>
+    <tr><td>Risk concentrated: if it fails, everything fails.</td><td>Risk sliced per capability; a failed carve-out affects one route.</td></tr>
+  </table>
+
+  <div class="oneliner">🎯 <strong>Interview one-liner:</strong> "Strangler fig: own the front door with a gateway, carve out one capability at a time behind a route flip, canary the risky ones, and keep rollback one config line away — the monolith shrinks in production, safely, while the business keeps shipping."</div>
+</section>
+
+<footer style="text-align:center;color:var(--ink-soft);font-size:.82rem;padding:10px 0 30px">
+  Microservices Top 15 · Java 17 + Spring Boot 3 · Made for interview prep — read one concept a day, say each one-liner out loud. 🎤
+</footer>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js"></script>
+<script>
+// copy button
+function copyCode(btn){
+  const code = btn.closest('.code-wrap').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied ✔';
+    setTimeout(()=>btn.textContent = old, 1500);
+  });
+}
+// highlight active section in sidebar while scrolling
+const links = document.querySelectorAll('.nav a');
+const sections = document.querySelectorAll('.concept');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.toggle('active', l.getAttribute('href') === '#'+e.target.id));
+    }
+  });
+},{rootMargin:'-30% 0px -60% 0px'});
+sections.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
